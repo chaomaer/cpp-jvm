@@ -2,11 +2,12 @@
 #include "parser/byteCodeParser.h"
 #include "core/frame.h"
 #include "test/test_frame.h"
+#include "core/interpreter.h"
 
 int main() {
-    test_locals();
-    test_operation();
-//    BufferedInputStream bf("/Users/chaomaer/jvm-demo/target/classes/HelloWord.class");
-//    ByteCodeParser bp(bf);
-//    bp.parse();
+    BufferedInputStream bf("/Users/chaomaer/jvm-demo/target/classes/HelloWord.class");
+    ByteCodeParser bp(bf);
+    auto class_file = bp.parse();
+    auto interpreter = new Interpreter();
+    interpreter->run(class_file);
 }

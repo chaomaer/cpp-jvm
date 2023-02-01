@@ -22,7 +22,14 @@ class FieldInfo : public MemberInfo {
 };
 
 class MethodInfo : public MemberInfo {
-
+public:
+    AttributeInfo* get_first_code_attributes() {
+        for (auto att: *attributes) {
+            if (att->attribute_name == "Code") {
+                return att;
+            }
+        }
+    }
 };
 
 class ClassFile {

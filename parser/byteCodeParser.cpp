@@ -21,7 +21,7 @@ ClassFile *ByteCodeParser::parse() {
     std::cout << "magic_num " << magic_number << std::endl;
     std::cout << "minor_version " << minor_version << std::endl;
     std::cout << "major_version " << major_version << std::endl;
-    // load constant pool
+    // loads constant pool
     classFile->constant_pool = load_constant_pool();
     // access flag & this class & super class
     classFile->access_flags = br.read_uint16();
@@ -66,7 +66,6 @@ std::vector<AttributeInfo *> *ByteCodeParser::load_attributes(ConstantPool *cp) 
     auto *attributes = new std::vector<AttributeInfo *>(attribute_cnt);
     for (int i = 0; i < attribute_cnt; i++) {
         uint16 attribute_name_index = br.read_uint16();
-        uint32 attribute_len = br.read_uint32();
         auto attribute_name = cp->get_utf8(attribute_name_index);
         std::cout << "attribute name: " << attribute_name << std::endl;
         attributes->at(i) = read_one_attribute(attribute_name, cp);
@@ -75,6 +74,14 @@ std::vector<AttributeInfo *> *ByteCodeParser::load_attributes(ConstantPool *cp) 
 }
 
 AttributeInfo *ByteCodeParser::read_one_attribute(std::string attribute_name, ConstantPool *cp) {
+    uint32 attribute_len = br.read_uint32();
+    if (attribute_name == "StackMapTable") {
+        // discard this attribute
+        for (int i = 0; i<attribute_len; i++) {
+            br.read_uint8();
+        }
+        return nullptr;
+    }
     if (attribute_name == "Signature") {
         auto *sig_attr = new SignatureAttribute();
         sig_attr->attribute_name = attribute_name;

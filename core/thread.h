@@ -5,8 +5,9 @@
 #ifndef CPP_JVM_THREAD_H
 #define CPP_JVM_THREAD_H
 
-class thread {
-
+class Thread {
+public:
+    int pc;
 };
 
 #endif //CPP_JVM_THREAD_H

@@ -3,6 +3,7 @@
 //
 
 #include "frame.h"
+#include "iostream"
 
 union float_int {
     float f_val;
@@ -70,6 +71,15 @@ Object *LocalVars::get_ref(int idx) {
 LocalVars::LocalVars(int size): std::vector<Slot *>(size) {
 }
 
+void LocalVars::print() {
+    for (int i = 0; i< this->size(); i++) {
+        if (this->at(i) != nullptr) {
+            std::cout << i << " -> "<< this->at(i)->numb << std::endl;
+        }
+    }
+    std::cout << "-------" << std::endl;
+}
+
 Slot::Slot(int numb) : numb(numb) {}
 
 Slot::Slot(Object *ref) : ref(ref) {}
@@ -126,7 +136,24 @@ OperationStack::OperationStack(int size): size(size), index(0), LocalVars(size) 
 
 }
 
-Frame::Frame(int maxStack, int maxLocals) : max_stack(maxStack), max_locals(maxLocals) {
+void OperationStack::push_slot(Slot *slot) {
+    this->at(index++) = slot;
+}
+
+Slot *OperationStack::pop_slot() {
+    return this->at(--index);
+}
+
+Slot *OperationStack::top() {
+    assert(index >= 1 && "operation_stack size is < 1");
+    return this->at(index-1);
+}
+
+Frame::Frame(int maxStack, int maxLocals, Thread* thread) : max_stack(maxStack), max_locals(maxLocals), thread(thread), pc(0) {
     local_vars = new LocalVars(max_locals);
     operation_stack = new OperationStack(max_stack);
+}
+
+void Frame::branch(short offset) {
+    pc = thread->pc + offset;
 }

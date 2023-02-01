@@ -7,6 +7,7 @@
 
 #include "vector"
 #include "stack"
+#include "thread.h"
 
 class Object {
 
@@ -27,6 +28,8 @@ public:
 
 class LocalVars : public std::vector<Slot *> {
 public:
+    void print();
+
     LocalVars(int size);
 
     void set_int(int idx, int val);
@@ -55,7 +58,12 @@ private:
     int index;
     int size;
 public:
+    Slot* top();
     OperationStack(int size);
+
+    void push_slot(Slot* slot);
+
+    Slot* pop_slot();
 
     void push_int(int val);
 
@@ -79,15 +87,18 @@ public:
 };
 
 class Frame {
-private:
+public:
+    int pc;
     int max_stack;
     int max_locals;
     Frame *lower;
+    Thread* thread;
 public:
     LocalVars *local_vars;
     OperationStack *operation_stack;
 public:
-    Frame(int maxStack, int maxLocals);
+    explicit Frame(int maxStack, int maxLocals, Thread* thread);
+    void branch(short offset);
 };
 
 #endif //CPP_JVM_FRAME_H

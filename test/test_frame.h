@@ -33,7 +33,7 @@
 #define PopRef pop_ref
 
 void test_locals() {
-    auto frame = new Frame(100, 100);
+    auto frame = new Frame(100, 100, nullptr);
     auto vars = *(frame->local_vars);
     auto op_stack = frame->operation_stack;
     vars.SetInt(0, 100);
@@ -53,7 +53,7 @@ void test_locals() {
 }
 
 void test_operation(){
-    auto frame = new Frame(100, 100);
+    auto frame = new Frame(100, 100, nullptr);
     auto ops = *(frame->operation_stack);
     ops.PushInt(100);
     ops.PushInt(-100);
