@@ -15,6 +15,7 @@ public:
     char buffer[BUFFER_SIZE];
 public:
     BufferedInputStream(const char* fileName);
+    BufferedInputStream(std::string fileName);
     uint8 read_uint8();
     uint16 read_uint16();
     uint32 read_uint32();

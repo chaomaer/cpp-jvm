@@ -6,14 +6,12 @@
 #include "frame.h"
 #include "instructions/factory.h"
 
-void Interpreter::run(ClassFile* classFile) {
-    auto method = classFile->methods->at(1);
-    auto code = (CodeAttribute*)method->get_first_code_attributes();
-    auto byte_code = code->byte_code;
-    auto max_stack = code->max_stack;
-    auto max_locals = code->max_locals;
+void Interpreter::run(Method* method) {
+    auto byte_code = method->code;
+    auto max_stack = method->max_stack;
+    auto max_locals = method->max_locals;
     auto thread = new Thread();
-    auto frame = new Frame(max_stack, max_locals, thread);
+    auto frame = new Frame(max_stack, max_locals, thread, method);
     loop(frame, byte_code);
 }
 

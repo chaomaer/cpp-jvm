@@ -14,6 +14,11 @@ void i_store(Frame* frame, int index) {
     frame->local_vars->set_int(index, val);
 }
 
+void a_store(Frame* frame, int index) {
+    auto val = frame->operation_stack->pop_ref();
+    frame->local_vars->set_ref(index, val);
+}
+
 void L_STORE::execute(Frame *frame) {
     l_store(frame, index);
 }
@@ -36,4 +41,12 @@ void I_STORE_1::execute(Frame *frame) {
 
 void I_STORE_2::execute(Frame *frame) {
     i_store(frame, 2);
+}
+
+void A_STORE_2::execute(Frame *frame) {
+    a_store(frame, 2);
+}
+
+void A_STORE_3::execute(Frame *frame) {
+    a_store(frame, 3);
 }

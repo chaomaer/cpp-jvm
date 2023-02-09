@@ -9,7 +9,7 @@
 
 class Interpreter {
 public:
-    void run(ClassFile* classFile);
+    void run(Method* classFile);
     void loop(Frame* frame, uint8* byte_code);
 };
 

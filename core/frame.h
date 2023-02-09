@@ -8,9 +8,14 @@
 #include "vector"
 #include "stack"
 #include "thread.h"
+#include "heap/class.h"
 
+class Class;
+class LocalVars;
 class Object {
-
+public:
+    Class* _class;
+    LocalVars* fields;
 };
 
 // primitive type or reference type
@@ -86,6 +91,7 @@ public:
     Object *pop_ref();
 };
 
+class Method;
 class Frame {
 public:
     int pc;
@@ -93,11 +99,12 @@ public:
     int max_locals;
     Frame *lower;
     Thread* thread;
+    Method* method;
 public:
     LocalVars *local_vars;
     OperationStack *operation_stack;
 public:
-    explicit Frame(int maxStack, int maxLocals, Thread* thread);
+    explicit Frame(int maxStack, int maxLocals, Thread* thread, Method* method);
     void branch(short offset);
 };
 

@@ -12,3 +12,10 @@ void IF_I_CMP_GT::execute(Frame *frame) {
         frame->branch(offset);
     }
 }
+
+void IF_EQ::execute(Frame *frame) {
+    auto val = frame->operation_stack->pop_int();
+    if (val == 0) {
+        frame->branch(offset);
+    }
+}

@@ -5,6 +5,7 @@
 #ifndef CPP_JVM2_CONSTANT_H
 #define CPP_JVM2_CONSTANT_H
 #include "instructions/base/instruction.h"
+#include "parser/constantInfo.h"
 
 class Nop : public NoOperandsInstruction {
 
@@ -43,6 +44,11 @@ public:
     int val;
 public:
     void fetch_operands(BytecodeReader* reader);
+    void execute(Frame* frame);
+};
+
+class IDC : public Index8Instruction {
+public:
     void execute(Frame* frame);
 };
 

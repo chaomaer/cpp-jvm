@@ -53,8 +53,27 @@ double BufferedInputStream::read_double() {
     return f;
 }
 
+std::string gen_class_name(const char* fileName) {
+    auto old = std::string(fileName);
+    auto last_slash = old.find_last_of('/');
+    auto prefix = old.substr(0, last_slash+1);
+    auto suffix = old.substr(last_slash+1) + ".class";
+    auto new_str = "/Users/chaomaer/Desktop/lib/" + prefix + suffix;
+    std::cout << prefix << " " << suffix << std::endl;
+    std::cout << new_str << std::endl;
+    return new_str;
+}
+
 BufferedInputStream::BufferedInputStream(const char *fileName) {
+    std::cout << "load class " << fileName << std::endl;
     _fp = fopen(fileName, "rb");
+    if (_fp == nullptr) {
+        std::string new_str = gen_class_name(fileName);
+        _fp = fopen(new_str.c_str(), "rb");
+    }
     fread(buffer, BUFFER_SIZE, 1, _fp);
     _index = 0;
+}
+
+BufferedInputStream::BufferedInputStream(std::string fileName) : BufferedInputStream(fileName.c_str()) {
 }

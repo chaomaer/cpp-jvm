@@ -11,4 +11,9 @@ public:
     void execute(Frame* frame);
 };
 
+class IF_EQ : public BranchInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 #endif //CPP_JVM2_COMPARISON_H

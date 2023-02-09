@@ -1,5 +1,5 @@
 //
-// Created by chaomaer on 2023/1/29.
+// Created by chaomaer on 2023/2/7.
 //
 
 #ifndef CPP_JVM2_CLASSFILE_H
@@ -25,15 +25,19 @@ class MethodInfo : public MemberInfo {
 public:
     AttributeInfo* get_first_code_attributes() {
         for (auto att: *attributes) {
-            if (att->attribute_name == "Code") {
+            if (att && att->attribute_name == "Code") {
                 return att;
             }
         }
+        return nullptr;
     }
 };
 
 class ClassFile {
 public:
+    std::string get_class_name();
+    std::string get_superClass_name();
+    std::vector<std::string>* get_interface_names();
     uint32 magic;
     uint16 minor_version;
     uint16 major_version;
@@ -51,5 +55,4 @@ public:
     uint16 attributes_count;
     std::vector<AttributeInfo*>* attributes;
 };
-
 #endif //CPP_JVM2_CLASSFILE_H

@@ -37,15 +37,15 @@ float LocalVars::get_float(int idx) {
 
 void LocalVars::set_long(int idx, long val) {
     int val1 = val;
-    int val2 = (long)val >> 32;
+    int val2 = (long) val >> 32;
     set_int(idx, val1);
-    set_int(idx+1, val2);
+    set_int(idx + 1, val2);
 }
 
 long LocalVars::get_long(int idx) {
     int val1 = get_int(idx);
-    int val2 = get_int(idx+1);
-    return (long )val2 << 32 | (val1 & 0xffffffffL);
+    int val2 = get_int(idx + 1);
+    return (long) val2 << 32 | (val1 & 0xffffffffL);
 }
 
 void LocalVars::set_double(int idx, double val) {
@@ -68,13 +68,13 @@ Object *LocalVars::get_ref(int idx) {
     return this->at(idx)->ref;
 }
 
-LocalVars::LocalVars(int size): std::vector<Slot *>(size) {
+LocalVars::LocalVars(int size) : std::vector<Slot *>(size) {
 }
 
 void LocalVars::print() {
-    for (int i = 0; i< this->size(); i++) {
+    for (int i = 0; i < this->size(); i++) {
         if (this->at(i) != nullptr) {
-            std::cout << i << " -> "<< this->at(i)->numb << std::endl;
+            std::cout << i << " -> " << this->at(i)->numb << std::endl;
         }
     }
     std::cout << "-------" << std::endl;
@@ -108,18 +108,18 @@ void OperationStack::push_long(long val) {
 }
 
 long OperationStack::pop_long() {
-    long val = get_long(index-2);
+    long val = get_long(index - 2);
     index -= 2;
     return val;
 }
 
 void OperationStack::push_double(double val) {
     set_double(index, val);
-    index+= 2;
+    index += 2;
 }
 
 double OperationStack::pop_double() {
-    double val = get_double(index-2);
+    double val = get_double(index - 2);
     index -= 2;
     return val;
 }
@@ -132,7 +132,7 @@ Object *OperationStack::pop_ref() {
     return get_ref(--index);
 }
 
-OperationStack::OperationStack(int size): size(size), index(0), LocalVars(size) {
+OperationStack::OperationStack(int size) : size(size), index(0), LocalVars(size) {
 
 }
 
@@ -146,10 +146,11 @@ Slot *OperationStack::pop_slot() {
 
 Slot *OperationStack::top() {
     assert(index >= 1 && "operation_stack size is < 1");
-    return this->at(index-1);
+    return this->at(index - 1);
 }
 
-Frame::Frame(int maxStack, int maxLocals, Thread* thread) : max_stack(maxStack), max_locals(maxLocals), thread(thread), pc(0) {
+Frame::Frame(int maxStack, int maxLocals, Thread *thread, Method *method) :
+        max_stack(maxStack), max_locals(maxLocals), thread(thread), pc(0), method(method) {
     local_vars = new LocalVars(max_locals);
     operation_stack = new OperationStack(max_stack);
 }

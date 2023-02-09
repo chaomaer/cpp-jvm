@@ -44,6 +44,7 @@ public:
 };
 
 class Index16Instruction : public Instruction {
+public:
     unsigned int index;
     void fetch_operands(BytecodeReader* reader);
 };

@@ -39,4 +39,14 @@ public:
     void execute(Frame* frame);
 };
 
+
+class A_STORE_2 : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class A_STORE_3 : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
 #endif //CPP_JVM2_STORE_H

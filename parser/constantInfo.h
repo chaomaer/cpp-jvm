@@ -25,6 +25,9 @@
 #include "vector"
 
 class ConstantInfo {
+public:
+    int type;
+    ConstantInfo(int type);
 };
 
 //typedef std::vector<ConstantInfo*> ConstantPool;
@@ -35,43 +38,52 @@ class ConstantPool : public std::vector<ConstantInfo*> {
 public:
     ConstantPool(uint16 cnt);
     std::string get_utf8(uint16 index);
+    std::string get_class_name(uint16 index);
+    std::pair<std::string, std::string> get_name_and_type(uint16 index);
 };
 
 class ConstantIntegerInfo : public ConstantInfo {
 public:
     int val;
+    ConstantIntegerInfo();
 };
 
 class ConstantLongInfo : public ConstantInfo {
 public:
     long long val;
+    ConstantLongInfo();
 };
 
 class ConstantFloatInfo : public ConstantInfo {
 public:
     float val;
+    ConstantFloatInfo();
 };
 
 class ConstantDoubleInfo : public ConstantInfo {
 public:
     double val;
+    ConstantDoubleInfo();
 };
 
 class ConstantUTF8Info : public ConstantInfo {
 public:
     std::string val;
+    ConstantUTF8Info();
 };
 
 class ConstantStringInfo : public ConstantInfo {
 public:
     ConstantPool* cp;
     uint16 string_index;
+    ConstantStringInfo();
 };
 
 class ConstantClassInfo : public ConstantInfo {
 public:
     ConstantPool* cp;
     uint16 class_index;
+    ConstantClassInfo();
 };
 
 class ConstantNameAndTypeInfo : public ConstantInfo {
@@ -79,6 +91,7 @@ public:
     ConstantPool* cp;
     uint16 name_index;
     uint16 descriptor_index;
+    ConstantNameAndTypeInfo();
 };
 
 class ConstantMemberRefInfo : public ConstantInfo {
@@ -86,17 +99,21 @@ public:
     ConstantPool* cp;
     uint16 class_index;
     uint16 name_and_type_index;
+    ConstantMemberRefInfo(int type);
 };
 
 class ConstantFieldRefInfo : public ConstantMemberRefInfo {
-
+public:
+    ConstantFieldRefInfo();
 };
 
 class ConstantMethodRefInfo : public ConstantMemberRefInfo {
-
+public:
+    ConstantMethodRefInfo();
 };
 
 class ConstantInterfaceMethodRefInfo : public ConstantMemberRefInfo {
-
+public:
+    ConstantInterfaceMethodRefInfo();
 };
 #endif //CPP_JVM2_CONSTANTINFO_H
