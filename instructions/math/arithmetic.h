@@ -16,6 +16,11 @@ public:
     void execute(Frame* frame);
 };
 
+class I_SUB : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 class I_INC : public Instruction {
 public:
     int index;

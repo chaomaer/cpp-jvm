@@ -41,9 +41,9 @@ Class *ClassLoader::define_class(ClassFile *class_file) {
 }
 
 void ClassLoader::resolve_super(Class *pClass) {
-    auto super = pClass->superClass_name;
-    if (super != "java/lang/Object") {
-        pClass->super_class = load_class(super);
+    auto name = pClass->name;
+    if (name != "java/lang/Object") {
+        pClass->super_class = load_class(pClass->superClass_name);
     }
 }
 

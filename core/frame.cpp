@@ -15,23 +15,27 @@ union double_long {
     long l_val;
 };
 
+void LocalVars::set_slot(int idx, Slot *val) {
+    (*_inner)[idx] = val;
+}
+
 void LocalVars::set_int(int idx, int val) {
-    this->at(idx) = new Slot(val);
+    _inner->at(idx) = new Slot(val);
 }
 
 int LocalVars::get_int(int idx) {
-    return this->at(idx)->numb;
+    return _inner->at(idx)->numb;
 }
 
 void LocalVars::set_float(int idx, float val) {
     float_int floatInt{};
     floatInt.f_val = val;
-    this->at(idx) = new Slot(floatInt.i_val);
+    _inner->at(idx) = new Slot(floatInt.i_val);
 }
 
 float LocalVars::get_float(int idx) {
     float_int floatInt{};
-    floatInt.i_val = this->at(idx)->numb;
+    floatInt.i_val = _inner->at(idx)->numb;
     return floatInt.f_val;
 }
 
@@ -61,20 +65,21 @@ double LocalVars::get_double(int idx) {
 }
 
 void LocalVars::set_ref(int idx, Object *ref) {
-    this->at(idx) = new Slot(ref);
+    _inner->at(idx) = new Slot(ref);
 }
 
 Object *LocalVars::get_ref(int idx) {
-    return this->at(idx)->ref;
+    return _inner->at(idx)->ref;
 }
 
-LocalVars::LocalVars(int size) : std::vector<Slot *>(size) {
+LocalVars::LocalVars(int size) {
+    _inner = new std::vector<Slot*>(size);
 }
 
 void LocalVars::print() {
-    for (int i = 0; i < this->size(); i++) {
-        if (this->at(i) != nullptr) {
-            std::cout << i << " -> " << this->at(i)->numb << std::endl;
+    for (int i = 0; i < _inner->size(); i++) {
+        if (_inner->at(i) != nullptr) {
+            std::cout << i << " -> " << _inner->at(i)->numb << std::endl;
         }
     }
     std::cout << "-------" << std::endl;
@@ -137,24 +142,36 @@ OperationStack::OperationStack(int size) : size(size), index(0), LocalVars(size)
 }
 
 void OperationStack::push_slot(Slot *slot) {
-    this->at(index++) = slot;
+    _inner->at(index++) = slot;
 }
 
 Slot *OperationStack::pop_slot() {
-    return this->at(--index);
+    return _inner->at(--index);
 }
 
 Slot *OperationStack::top() {
     assert(index >= 1 && "operation_stack size is < 1");
-    return this->at(index - 1);
+    return _inner->at(index - 1);
 }
 
-Frame::Frame(int maxStack, int maxLocals, Thread *thread, Method *method) :
-        max_stack(maxStack), max_locals(maxLocals), thread(thread), pc(0), method(method) {
+Object *OperationStack::top_ref(int number) {
+    auto slot = _inner->at(index-number);
+    return slot->ref;
+}
+
+Frame::Frame(Thread *thread, Method *method) : thread(thread), pc(0), method(method) {
+    max_locals = method->max_locals;
+    max_stack = method->max_stack;
     local_vars = new LocalVars(max_locals);
     operation_stack = new OperationStack(max_stack);
 }
 
 void Frame::branch(short offset) {
     pc = thread->pc + offset;
+}
+
+Frame::Frame(int maxStack, int maxLocals, Thread *thread, Method *method) :pc(0), max_stack(maxStack), max_locals(maxLocals),
+                                                                            thread(thread), method(method) {
+    local_vars = new LocalVars(max_locals);
+    operation_stack = new OperationStack(max_stack);
 }

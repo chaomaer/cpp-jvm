@@ -33,3 +33,10 @@ void I_INC::execute(Frame *frame) {
     auto val = local_vars->get_int(index);
     local_vars->set_int(index, _const + val);
 }
+
+void I_SUB::execute(Frame *frame) {
+    auto* stack = frame->operation_stack;
+    auto v2 = stack->pop_int();
+    auto v1 = stack->pop_int();
+    stack->push_int(v1 - v2);
+}

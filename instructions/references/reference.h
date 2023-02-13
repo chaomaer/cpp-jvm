@@ -41,6 +41,12 @@ public:
     void execute(Frame* frame);
 };
 
+class INVOKE_STATIC : public Index16Instruction {
+public:
+    void execute(Frame* frame);
+};
+
+//https://stackoverflow.com/questions/13764238/why-invokespecial-is-needed-when-invokevirtual-exists
 class INVOKE_SPECIAL : public Index16Instruction {
 public:
     void execute(Frame* frame);
@@ -48,6 +54,14 @@ public:
 
 class INVOKE_VIRTUAL : public Index16Instruction {
 public:
+    void execute(Frame* frame);
+};
+
+class INVOKE_INTERFACE : public Instruction {
+public:
+    int index;
+public:
+    void fetch_operands(BytecodeReader* reader);
     void execute(Frame* frame);
 };
 

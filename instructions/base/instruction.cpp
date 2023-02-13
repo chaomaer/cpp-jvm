@@ -3,6 +3,17 @@
 //
 
 #include "instruction.h"
+#include "iostream"
+
+void invoke_method(Frame* invoker_frame, Method* method) {
+    auto t = invoker_frame->thread;
+    auto new_frame = t->new_frame(method);
+    t->push_frame(new_frame);
+    auto arg_slot = method->arg_slot_number;
+    for (int i = arg_slot-1; i>=0; i--) {
+        new_frame->local_vars->set_slot(i, invoker_frame->operation_stack->pop_slot());
+    }
+}
 
 void Index8Instruction::fetch_operands(BytecodeReader *reader) {
     index = reader->read_uint8();
@@ -45,6 +56,9 @@ uint64 BytecodeReader::read_uint64() {
 }
 
 BytecodeReader::BytecodeReader(uint8 *code): code(code) {
+}
+
+BytecodeReader::BytecodeReader() {
 }
 
 void BytecodeReader::reset_cp(int pc) {

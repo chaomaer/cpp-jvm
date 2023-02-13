@@ -6,7 +6,12 @@
 #define CPP_JVM2_RETURN_H
 #include "instructions/base/instruction.h"
 
-class RETURN : public Instruction {
+class RETURN : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class I_RETURN : public NoOperandsInstruction {
 public:
     void execute(Frame* frame);
 };

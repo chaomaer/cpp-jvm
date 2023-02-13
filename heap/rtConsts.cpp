@@ -62,6 +62,17 @@ MethodRef::MethodRef(ConstantMethodRefInfo *info, RTConstantPool *cp, int type) 
 
 }
 
+Method *MethodRef::resolve_method_ref() {
+    if (method != nullptr) {
+        return method;
+    }
+    auto cur_class = rt_cp->_class;
+    auto ref_class = resolve_class_ref();
+    method = ref_class->lookup_method(name, descriptor);
+    method->_class = ref_class;
+    return method;
+}
+
 InterfaceMethodRef::InterfaceMethodRef(ConstantInterfaceMethodRefInfo *info, RTConstantPool *cp) :
         MethodRef((ConstantMethodRefInfo *) info, cp, CONSTANT_InterfaceMethodref) {
 

@@ -24,6 +24,7 @@ std::vector<Method *> *Class::new_methods(ClassFile *class_file) {
         auto new_m = new Method;
         new_m->copy_member_info(info);
         new_m->copy_attributes(info);
+        new_m->cal_arg_slot_number(new_m->descriptor);
         new_m->_class = this;
         vect->push_back(new_m);
     }
@@ -168,7 +169,8 @@ void Class::init_one_static(Field* f) {
             static_vars->set_double(slot_id, val->val);
         }
     } else {
-        std::cout << "not supported " << std::endl;
+        static_vars->set_ref(slot_id, nullptr);
+        std::cout << "not supported " <<des << std::endl;
     }
 }
 
@@ -187,6 +189,9 @@ Field *Class::lookup_field(std::string name, std::string descriptor) {
         if (f->name == name && f->descriptor == descriptor) {
             return f;
         }
+    }
+    if (super_class != nullptr) {
+        return super_class->lookup_field(name, descriptor);
     }
     return nullptr;
 }
@@ -208,6 +213,10 @@ bool Class::is_sub_of(Class *tClass) {
     return false;
 }
 
+bool Class::is_super_of(Class* tClass) {
+    return tClass->is_sub_of(this);
+}
+
 Method *Class::find_main_method() {
     for (auto m: *methods) {
         if (m->name == "main" && m->descriptor == "([Ljava/lang/String;)V") {
@@ -215,6 +224,40 @@ Method *Class::find_main_method() {
         }
     }
     return nullptr;
+}
+
+Method* lookup_method_in_interfaces(std::vector<Class*>* _interfaces, std::string name, std::string descriptor) {
+    for (auto inter : *_interfaces) {
+        for (auto m: *inter->methods) {
+            if (m->name == name && m->descriptor == descriptor) {
+                return m;
+            }
+        }
+        auto ret = lookup_method_in_interfaces(inter->interface_classes, name, descriptor);
+        if (ret != nullptr) return ret;
+    }
+    return nullptr;
+}
+
+Method *Class::lookup_method(std::string name, std::string descriptor) {
+    Method *ret_m = nullptr;
+    for (auto m: *methods) {
+        if (m->name == name && m->descriptor == descriptor) {
+            return m;
+        }
+    }
+    if (super_class != nullptr && !is_interface()) {
+        ret_m = super_class->lookup_method(name, descriptor);
+    }
+    return lookup_method_in_interfaces(interface_classes, name, descriptor);
+}
+
+bool Class::is_interface() {
+    return access_flags & ACC_INTERFACE;
+}
+
+bool Class::is_super() {
+    return access_flags & ACC_SUPER;
 }
 
 void ClassMember::copy_member_info(MemberInfo *member_info) {
@@ -233,7 +276,42 @@ void Method::copy_attributes(MethodInfo *method_info) {
     code = attributes->byte_code;
 }
 
-bool Field::is_static() {
+static char primitive_type[]{'S', 'I', 'L', };
+
+int Method::cal_arg_slot_number(std::string descriptor) {
+    auto right_brace = descriptor.find_last_of(')');
+    descriptor = descriptor.substr(1, right_brace-1);
+    int idx = 0;
+    int slot_number = 0;
+    char x;
+    while (idx < descriptor.size()) {
+        x = descriptor[idx];
+        //array
+        if (x == '[') {
+
+        }else if (x == 'L') {
+            while(x != ';') {
+                idx++;
+                x = descriptor[idx];
+            }
+            slot_number++;
+        }else if (x == 'J' || x == 'D') {
+            slot_number+=2;
+        }else if (x == 'Z' || x == 'B' || x == 'C' || x == 'S' || x == 'I' || x == 'F' ){
+            slot_number++;
+        }else {
+            assert(false && "error in this place");
+        }
+        idx++;
+    }
+    if (!is_static()) {
+        slot_number++;
+    }
+    arg_slot_number = slot_number;
+    return slot_number;
+}
+
+bool ClassMember::is_static() {
     return access_flag & ACC_STATIC;
 }
 
@@ -241,7 +319,7 @@ bool Field::is_long_or_double() {
     return descriptor == "J" || descriptor == "D";
 }
 
-bool Field::is_final() {
+bool ClassMember::is_final() {
     return access_flag & ACC_FINAL;
 }
 

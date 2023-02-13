@@ -31,13 +31,17 @@ public:
 };
 
 
-class LocalVars : public std::vector<Slot *> {
+class LocalVars{
+public:
+    std::vector<Slot *>* _inner;
 public:
     void print();
 
     LocalVars(int size);
 
     void set_int(int idx, int val);
+
+    void set_slot(int idx, Slot* val);
 
     int get_int(int idx);
 
@@ -64,6 +68,7 @@ private:
     int size;
 public:
     Slot* top();
+    Object* top_ref(int number);
     OperationStack(int size);
 
     void push_slot(Slot* slot);
@@ -92,6 +97,7 @@ public:
 };
 
 class Method;
+class Thread;
 class Frame {
 public:
     int pc;
@@ -104,7 +110,8 @@ public:
     LocalVars *local_vars;
     OperationStack *operation_stack;
 public:
-    explicit Frame(int maxStack, int maxLocals, Thread* thread, Method* method);
+    Frame(int maxStack, int maxLocals, Thread* thread, Method* method);
+    Frame(Thread* thread, Method* method);
     void branch(short offset);
 };
 

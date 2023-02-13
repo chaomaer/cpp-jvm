@@ -13,6 +13,7 @@ public:
     int pc;
 public:
     BytecodeReader(uint8* code);
+    BytecodeReader();
     void reset_cp(int pc);
     void reset(uint8* code, int pc);
     uint8 read_uint8();
@@ -20,6 +21,8 @@ public:
     uint32 read_uint32();
     uint64 read_uint64();
 };
+
+void invoke_method(Frame* frame, Method* method);
 
 class Instruction {
 public:

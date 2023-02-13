@@ -52,6 +52,7 @@ public:
     MethodRef(ConstantMethodRefInfo* info, RTConstantPool* cp);
     MethodRef(ConstantMethodRefInfo* info, RTConstantPool* cp, int type);
     Method* method;
+    Method* resolve_method_ref();
 };
 
 class InterfaceMethodRef : public MethodRef {

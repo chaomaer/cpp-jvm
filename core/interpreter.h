@@ -10,7 +10,7 @@
 class Interpreter {
 public:
     void run(Method* classFile);
-    void loop(Frame* frame, uint8* byte_code);
+    void loop(Thread* thread);
 };
 
 #endif //CPP_JVM2_INTERPRETER_H

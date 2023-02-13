@@ -26,6 +26,8 @@ public:
     std::string name;
     std::string descriptor;
     Class* _class;
+    bool is_static();
+    bool is_final();
     void copy_member_info(MemberInfo* member_info);
 };
 
@@ -33,18 +35,18 @@ class Field : public ClassMember {
 public:
     int slot_id;
     int const_idx;
-    bool is_static();
-    bool is_final();
     bool is_long_or_double();
 };
 
 class Method : public ClassMember {
 public:
+    int arg_slot_number;
     uint16 max_stack;
     uint16 max_locals;
     uint8* code;
 public:
     void copy_attributes(MethodInfo* method_info);
+    int cal_arg_slot_number(std::string descriptor);
 };
 class ClassLoader;
 class LocalVars;
@@ -55,10 +57,14 @@ public:
     std::vector<Method*>* new_methods(ClassFile* class_file);
     RTConstantPool* new_rt_constant_pool(ClassFile* class_file);
     Field* lookup_field(std::string name, std::string descriptor);
+    Method* lookup_method(std::string name, std::string descriptor);
     Object* new_object();
     Method* find_main_method();
     bool is_sub_of(Class* tClass);
+    bool is_super_of(Class* tClass);
     bool is_public();
+    bool is_super();
+    bool is_interface();
     void calc_instance_field_ids();
     void calc_static_field_ids();
     void init_static_fields();

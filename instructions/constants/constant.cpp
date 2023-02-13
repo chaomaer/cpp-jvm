@@ -42,20 +42,49 @@ void I_CONST_1::execute(Frame *frame) {
     frame->operation_stack->push_int(1);
 }
 
+void I_CONST_2::execute(Frame *frame) {
+    frame->operation_stack->push_int(2);
+}
+
+void I_CONST_3::execute(Frame *frame) {
+    frame->operation_stack->push_int(3);
+}
+
+void I_CONST_4::execute(Frame *frame) {
+    frame->operation_stack->push_int(4);
+}
+
+void I_CONST_5::execute(Frame *frame) {
+    frame->operation_stack->push_int(5);
+}
+
 void IDC::execute(Frame *frame) {
     auto cp = frame->method->_class->rt_constant_pool;
     auto stack = frame->operation_stack;
     auto val = cp->at(index);
     if (val->type == CONSTANT_Integer) {
-        stack->push_int(((RTInt_Const*)(val))->val);
-    }else if (val -> type == CONSTANT_Long) {
-        stack->push_long(((RTLong_Const*)val)->val);
+        stack->push_int(((RTInt_Const *) (val))->val);
     }else if (val -> type == CONSTANT_Float) {
         stack->push_float(((RTFloat_Const*)val)->val);
-    }else if (val -> type == CONSTANT_Double) {
-        stack->push_double(((RTDouble_Const*)val)->val);
     }else if (val -> type == CONSTANT_Class) {
         std::cout << "load class unsupported" << std::endl;
+    }else {
+        std::cout << "load unsupported const" << std::endl;
+    }
+}
+
+void IDC_W::execute(Frame *frame) {
+    ((IDC*)this)->execute(frame);
+}
+
+void IDC2_W::execute(Frame *frame) {
+    auto cp = frame->method->_class->rt_constant_pool;
+    auto stack = frame->operation_stack;
+    auto val = cp->at(index);
+    if (val -> type == CONSTANT_Long) {
+        stack->push_long(((RTLong_Const*)val)->val);
+    }else if (val -> type == CONSTANT_Double) {
+        stack->push_double(((RTDouble_Const *) val)->val);
     }else {
         std::cout << "load unsupported const" << std::endl;
     }

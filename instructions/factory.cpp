@@ -19,14 +19,28 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new I_CONST_0();
         case 0x04:
             return new I_CONST_1();
+        case 0x05:
+            return new I_CONST_2();
+        case 0x06:
+            return new I_CONST_3();
+        case 0x07:
+            return new I_CONST_4();
+        case 0x08:
+            return new I_CONST_5();
         case 0x10:
             return new B_I_PUSH();
         case 0x12:
             return new IDC();
+        case 0x14:
+            return new IDC2_W();
+        case 0x1a:
+            return new I_LOAD_0();
         case 0x1b:
             return new I_LOAD_1();
         case 0x1c:
             return new I_LOAD_2();
+        case 0x2a:
+            return new A_LOAD_0();
         case 0x2c:
             return new A_LOAD_2();
         case 0x2d:
@@ -43,6 +57,8 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new DUP();
         case 0x60:
             return new I_ADD();
+        case 0x64:
+            return new I_SUB();
         case 0x84:
             return new I_INC();
         case 0x99:
@@ -51,6 +67,8 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new IF_I_CMP_GT();
         case 0xa7:
             return new GOTO();
+        case 0xac:
+            return new I_RETURN();
         case 0xb1:
             return new RETURN();
         case 0xb2:
@@ -65,6 +83,8 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new INVOKE_VIRTUAL();
         case 0xb7:
             return new INVOKE_SPECIAL();
+        case 0xb8:
+            return new INVOKE_STATIC();
         case 0xbb:
             return new NEW();
         case 0xc0:

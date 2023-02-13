@@ -27,6 +27,22 @@ class I_CONST_1 : public NoOperandsInstruction {
     void execute(Frame* frame);
 };
 
+class I_CONST_2 : public NoOperandsInstruction {
+    void execute(Frame* frame);
+};
+
+class I_CONST_3 : public NoOperandsInstruction {
+    void execute(Frame* frame);
+};
+
+class I_CONST_4 : public NoOperandsInstruction {
+    void execute(Frame* frame);
+};
+
+class I_CONST_5 : public NoOperandsInstruction {
+    void execute(Frame* frame);
+};
+
 class I_CONST_M1 : public NoOperandsInstruction {
     void execute(Frame* frame);
 };
@@ -48,6 +64,16 @@ public:
 };
 
 class IDC : public Index8Instruction {
+public:
+    void execute(Frame* frame);
+};
+
+class IDC_W : public Index16Instruction {
+public:
+    void execute(Frame* frame);
+};
+
+class IDC2_W : public Index16Instruction {
 public:
     void execute(Frame* frame);
 };

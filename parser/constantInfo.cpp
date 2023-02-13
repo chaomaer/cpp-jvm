@@ -12,6 +12,7 @@ std::string ConstantPool::get_utf8(uint16 index) {
 
 std::string ConstantPool::get_class_name(uint16 index) {
     auto *info = (ConstantClassInfo *) this->at(index);
+    if (info == nullptr) return "";
     assert(info->type == CONSTANT_Class);
     return get_utf8(info->class_index);
 }
