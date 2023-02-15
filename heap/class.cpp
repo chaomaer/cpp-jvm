@@ -4,6 +4,7 @@
 #include <iostream>
 #include "class.h"
 #include "accessFlags.h"
+#include "core/interpreter.h"
 
 std::vector<Field *> *Class::new_fields(ClassFile *class_file) {
     auto vect = new std::vector<Field*>;
@@ -287,6 +288,18 @@ Object *Class::new_array(int size) {
     return nullptr;
 }
 
+void Class::execute_class_init() {
+    auto m = lookup_method("<clinit>", "()V");
+    if (m == nullptr) {
+        return;
+    }
+    auto thread = new Thread();
+    auto frame = thread->new_frame(m);
+    thread->push_frame(frame);
+    auto vm = new Interpreter();
+    vm->loop(thread);
+}
+
 Class *Class::array_class() {
     auto array_name = get_array_name();
     return class_loader->load_class(array_name);
@@ -373,6 +386,10 @@ void Field::copy_attributes(FieldInfo *field_info) {
 
 bool ClassMember::is_final() {
     return access_flag & ACC_FINAL;
+}
+
+bool ClassMember::is_native() {
+    return access_flag & ACC_NATIVE;
 }
 
 RTConstantPool::RTConstantPool(int size) : std::vector<RTConst*>(size){

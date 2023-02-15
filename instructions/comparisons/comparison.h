@@ -11,6 +11,16 @@ public:
     void execute(Frame* frame);
 };
 
+class IF_I_CMP_GE : public BranchInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class IF_I_CMP_LE : public BranchInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 class IF_EQ : public BranchInstruction {
 public:
     void execute(Frame* frame);

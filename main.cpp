@@ -5,11 +5,12 @@
 #include "core/interpreter.h"
 
 void start_jvm() {
-    auto class_loader = ClassLoader();
-    auto class_name = "/Users/chaomaer/jvm-demo/target/classes/TestSpecial.class";
-    auto main_class = class_loader.load_class(class_name);
+    auto class_loader = new ClassLoader();
+    class_loader->class_paths->push_back("/Users/chaomaer/jvm-demo/target/classes/");
+    class_loader->class_paths->push_back("/Users/chaomaer/Desktop/lib/");
+    auto class_name = "BubbleSortTest";
+    auto main_class = class_loader->load_class(class_name);
 
-    (*class_loader.class_map)["TestSpecial"] = main_class;
     auto main_method = main_class->find_main_method();
     if (main_method == nullptr) {
         std::cout << "no main method" << std::endl;

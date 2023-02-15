@@ -28,6 +28,7 @@ public:
     Class* _class;
     bool is_static();
     bool is_final();
+    bool is_native();
     void copy_member_info(MemberInfo* member_info);
 };
 
@@ -69,6 +70,7 @@ public:
     Class* array_class();
     std::string get_array_name();
     Object* new_array(int size);
+    void execute_class_init();
     bool is_sub_of(Class* tClass);
     bool is_super_of(Class* tClass);
     bool is_public();

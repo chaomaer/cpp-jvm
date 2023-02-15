@@ -43,6 +43,14 @@ void I_STORE_2::execute(Frame *frame) {
     i_store(frame, 2);
 }
 
+void I_STORE_3::execute(Frame *frame) {
+    i_store(frame, 3);
+}
+
+void A_STORE::execute(Frame *frame) {
+    a_store(frame, index);
+}
+
 void A_STORE_1::execute(Frame *frame) {
     a_store(frame, 1);
 }
@@ -53,4 +61,8 @@ void A_STORE_2::execute(Frame *frame) {
 
 void A_STORE_3::execute(Frame *frame) {
     a_store(frame, 3);
+}
+
+void A_STORE_4::execute(Frame *frame) {
+    a_store(frame, 4);
 }

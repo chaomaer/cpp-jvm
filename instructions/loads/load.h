@@ -30,6 +30,16 @@ public:
     void execute(Frame* frame);
 };
 
+class I_LOAD_3 : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class A_LOAD : public Index8Instruction {
+public:
+    void execute(Frame* frame);
+};
+
 class A_LOAD_0 : public NoOperandsInstruction {
 public:
     void execute(Frame* frame);

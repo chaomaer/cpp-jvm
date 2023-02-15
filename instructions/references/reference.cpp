@@ -199,9 +199,9 @@ void INVOKE_VIRTUAL::execute(Frame *frame) {
     auto method_ref = (MethodRef *) cp->at(index);
     auto stack = frame->operation_stack;
     if (method_ref->name == "println") {
-        std::cout << "************" << std::endl;
+        //std::cout << "************" << std::endl;
         _println(stack, method_ref->descriptor);
-        std::cout << "************" << std::endl;
+        //std::cout << "************" << std::endl;
         return;
     }
     auto m = method_ref->resolve_method_ref();

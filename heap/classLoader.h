@@ -11,7 +11,7 @@
 class Class;
 class ClassLoader {
 public:
-    std::vector<std::string> class_paths;
+    std::vector<std::string>* class_paths;
     std::unordered_map<std::string, Class*>* class_map;
 private:
     Class* load_non_array_class(std::string class_name);

@@ -38,12 +38,18 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new LDC();
         case 0x14:
             return new LDC2_W();
+        case 0x15:
+            return new I_LOAD();
+        case 0x19:
+            return new A_LOAD();
         case 0x1a:
             return new I_LOAD_0();
         case 0x1b:
             return new I_LOAD_1();
         case 0x1c:
             return new I_LOAD_2();
+        case 0x1d:
+            return new I_LOAD_3();
         case 0x2a:
             return new A_LOAD_0();
         case 0x2b:
@@ -52,20 +58,30 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new A_LOAD_2();
         case 0x2d:
             return new A_LOAD_3();
+        case 0x2e:
+            return new I_A_LOAD();
         case 0x32:
             return new A_A_LOAD();
         case 0x34:
             return new C_A_LOAD();
+        case 0x36:
+            return new I_STORE();
+        case 0x3a:
+            return new A_STORE();
         case 0x3c:
             return new I_STORE_1();
         case 0x3d:
             return new I_STORE_2();
+        case 0x3e:
+            return new I_STORE_3();
         case 0x4c:
             return new A_STORE_1();
         case 0x4d:
             return new A_STORE_2();
         case 0x4e:
             return new A_STORE_3();
+        case 0x4f:
+            return new I_A_STORE();
         case 0x53:
             return new A_A_STORE();
         case 0x55:
@@ -82,8 +98,12 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new I_INC();
         case 0x99:
             return new IF_EQ();
+        case 0xa2:
+            return new IF_I_CMP_GE();
         case 0xa3:
             return new IF_I_CMP_GT();
+        case 0xa4:
+            return new IF_I_CMP_LE();
         case 0xa6:
             return new IF_A_CMP_NE();
         case 0xa7:

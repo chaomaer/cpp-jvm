@@ -74,8 +74,9 @@ BufferedInputStream::BufferedInputStream(const char *fileName) {
     std::cout << "load class " << fileName << std::endl;
     _fp = fopen(fileName, "rb");
     if (_fp == nullptr) {
-        std::string new_str = gen_class_name(fileName);
-        _fp = fopen(new_str.c_str(), "rb");
+        // std::string new_str = gen_class_name(fileName);
+        //_fp = fopen(new_str.c_str(), "rb");
+        std::cout << fileName << " not find" << std::endl;
     }
     fread(buffer, BUFFER_SIZE, 1, _fp);
     _index = 0;

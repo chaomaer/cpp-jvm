@@ -26,6 +26,14 @@ void I_LOAD_2::execute(Frame *frame) {
     _iload(frame, 2);
 }
 
+void I_LOAD_3::execute(Frame *frame) {
+    _iload(frame, 3);
+}
+
+void A_LOAD::execute(Frame *frame) {
+    _aload(frame, index);
+}
+
 void A_LOAD_0::execute(Frame *frame) {
     _aload(frame, 0);
 }
