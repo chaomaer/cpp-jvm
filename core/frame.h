@@ -18,7 +18,20 @@ public:
     LocalVars* fields;
 };
 
-// primitive type or reference type
+class ArrayObject0 : public Object {
+public:
+    int type;
+};
+
+template<typename T>
+class ArrayObject : public ArrayObject0 {
+public:
+    ArrayObject(Class* aClass, int size);
+    std::vector<T>* arr;
+    int size();
+};
+
+// primitive type or reference type or array type
 class Slot {
 public:
     Slot(int numb);

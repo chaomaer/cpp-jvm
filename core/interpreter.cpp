@@ -23,7 +23,7 @@ void Interpreter::loop(Thread* thread) {
         // record cur_pc in thread.pc
         reader->reset(frame->method->code, frame->pc);
         uint8 op_code = reader->read_uint8();
-        printf("op_code is %x\n", op_code);
+        //printf("op_code is %x\n", op_code);
         auto inst = InstructionFactory::new_instruction(op_code);
         inst->fetch_operands(reader);
         frame->pc = reader->pc;

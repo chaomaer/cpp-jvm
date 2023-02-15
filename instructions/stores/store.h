@@ -39,6 +39,10 @@ public:
     void execute(Frame* frame);
 };
 
+class A_STORE_1 : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
 
 class A_STORE_2 : public NoOperandsInstruction {
 public:

@@ -16,4 +16,8 @@ public:
     void execute(Frame* frame);
 };
 
+class IF_A_CMP_NE : public BranchInstruction {
+public:
+    void execute(Frame* frame);
+};
 #endif //CPP_JVM2_COMPARISON_H

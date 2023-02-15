@@ -35,6 +35,11 @@ public:
     void execute(Frame* frame);
 };
 
+class A_LOAD_1 : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 class A_LOAD_2 : public NoOperandsInstruction {
 public:
     void execute(Frame* frame);

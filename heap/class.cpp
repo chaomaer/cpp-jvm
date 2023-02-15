@@ -11,6 +11,7 @@ std::vector<Field *> *Class::new_fields(ClassFile *class_file) {
         auto info = class_file->fields->at(i);
         auto new_f = new Field;
         new_f->copy_member_info(info);
+        new_f->copy_attributes(info);
         new_f->_class = this;
         vect->push_back(new_f);
     }
@@ -38,6 +39,9 @@ RTConstantPool *Class::new_rt_constant_pool(ClassFile *class_file) {
     // 从1开始
     for (int i = 1; i<cp->size(); i++) {
         auto _const = cp->at(i);
+        if (_const == nullptr) {
+            continue;
+        }
         auto type = _const->type;
         if (type == CONSTANT_Integer) {
             auto val = ((ConstantIntegerInfo*)(_const))->val;
@@ -77,8 +81,13 @@ RTConstantPool *Class::new_rt_constant_pool(ClassFile *class_file) {
             auto rt_val = new MethodRef(info, rt_cp);
             rt_val->rt_cp = rt_cp;
             rt_cp->at(i) = rt_val;
+        }else if (type == CONSTANT_InterfaceMethodref) {
+            auto info = (ConstantInterfaceMethodRefInfo*)(_const);
+            auto rt_val = new InterfaceMethodRef(info, rt_cp);
+            rt_val->rt_cp = rt_cp;
+            rt_cp->at(i) = rt_val;
         }else if (type == CONSTANT_Class) {
-            auto info = (ConstantClassInfo*)(_const);
+            auto info = (ConstantClassInfo *) (_const);
             auto rt_val = new ClassRef(info, rt_cp);
             rt_val->rt_cp = rt_cp;
             rt_cp->at(i) = rt_val;
@@ -93,7 +102,6 @@ RTConstantPool *Class::new_rt_constant_pool(ClassFile *class_file) {
 }
 
 Class::Class(ClassFile *class_file) {
-    std::cout << "hello class" << std::endl;
     this->access_flags = class_file->access_flags;
     this->superClass_name = class_file->get_superClass_name();
     this->name = class_file->get_class_name();
@@ -170,7 +178,7 @@ void Class::init_one_static(Field* f) {
         }
     } else {
         static_vars->set_ref(slot_id, nullptr);
-        std::cout << "not supported " <<des << std::endl;
+        std::cout << "[INIT STATIC]: not supported " <<des << std::endl;
     }
 }
 
@@ -214,7 +222,7 @@ bool Class::is_sub_of(Class *tClass) {
 }
 
 bool Class::is_super_of(Class* tClass) {
-    return tClass->is_sub_of(this);
+    return tClass->is_sub_of(this) && tClass != this;
 }
 
 Method *Class::find_main_method() {
@@ -260,6 +268,43 @@ bool Class::is_super() {
     return access_flags & ACC_SUPER;
 }
 
+Class::Class() {
+
+}
+
+Object *Class::new_array(int size) {
+    if (name == "[Z" || name == "[B" || name == "[I" || name == "[S" || name == "[C") {
+        return new ArrayObject<int>(this, size);
+    }else if (name == "[J") {
+        return new ArrayObject<long>(this, size);
+    }else if (name == "[F") {
+        return new ArrayObject<float>(this, size);
+    }else if (name == "[D") {
+        return new ArrayObject<double>(this, size);
+    }else if (name[0] == '[') {
+        return new ArrayObject<Object*>(this, size);
+    }
+    return nullptr;
+}
+
+Class *Class::array_class() {
+    auto array_name = get_array_name();
+    return class_loader->load_class(array_name);
+}
+
+std::string Class::get_array_name() {
+    //array
+    if (name[0] == '[') {
+        return "[" + name;
+    }
+    //primitive
+    if (primitive_types.count(name)) {
+        return "[" + primitive_types[name];
+    }
+    //object
+    return "[L" + name + ";";
+}
+
 void ClassMember::copy_member_info(MemberInfo *member_info) {
     access_flag = member_info->access_flags;
     name = member_info->cp->get_utf8(member_info->name_index);
@@ -275,8 +320,6 @@ void Method::copy_attributes(MethodInfo *method_info) {
     max_locals = attributes->max_locals;
     code = attributes->byte_code;
 }
-
-static char primitive_type[]{'S', 'I', 'L', };
 
 int Method::cal_arg_slot_number(std::string descriptor) {
     auto right_brace = descriptor.find_last_of(')');
@@ -319,9 +362,40 @@ bool Field::is_long_or_double() {
     return descriptor == "J" || descriptor == "D";
 }
 
+void Field::copy_attributes(FieldInfo *field_info) {
+    if (is_final()) {
+        auto att = (ConstantValueAttribute*)(field_info->get_first_constant_attribute());
+        if (att != nullptr) {
+            const_idx = att->constant_value_index;
+        }
+    }
+}
+
 bool ClassMember::is_final() {
     return access_flag & ACC_FINAL;
 }
 
 RTConstantPool::RTConstantPool(int size) : std::vector<RTConst*>(size){
+}
+
+Object* new_string_object(ClassLoader* class_loader, std::string str) {
+    auto _class = class_loader->load_class("java/lang/String");
+    auto object = _class->new_object();
+    auto idx = object->_class->lookup_field("value", "[C")->slot_id;
+    auto str_arr = new ArrayObject<int>(_class, str.size());
+    for (int i = 0; i<str.size(); i++) {
+        str_arr->arr->at(i) = (int )str[i];
+    }
+    object->fields->set_ref(idx, str_arr);
+    return object;
+}
+
+std::string to_string(Object* object) {
+    auto idx = object->_class->lookup_field("value", "[C")->slot_id;
+    auto str_array = (ArrayObject<int>*)object->fields->get_ref(idx);
+    std::string s;
+    for (int i = 0; i<str_array->size(); i++) {
+        s.push_back((char )str_array->arr->at(i));
+    }
+    return s;
 }

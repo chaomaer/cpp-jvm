@@ -63,17 +63,17 @@ public:
     void execute(Frame* frame);
 };
 
-class IDC : public Index8Instruction {
+class LDC : public Index8Instruction {
 public:
     void execute(Frame* frame);
 };
 
-class IDC_W : public Index16Instruction {
+class LDC_W : public Index16Instruction {
 public:
     void execute(Frame* frame);
 };
 
-class IDC2_W : public Index16Instruction {
+class LDC2_W : public Index16Instruction {
 public:
     void execute(Frame* frame);
 };

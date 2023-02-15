@@ -5,6 +5,7 @@
 #include "constant.h"
 #include "heap/rtConsts.h"
 #include <iostream>
+#include "core/frame.h"
 
 void A_CONST_NULL::execute(Frame *frame) {
     frame->operation_stack->push_ref(nullptr);
@@ -58,7 +59,7 @@ void I_CONST_5::execute(Frame *frame) {
     frame->operation_stack->push_int(5);
 }
 
-void IDC::execute(Frame *frame) {
+void LDC::execute(Frame *frame) {
     auto cp = frame->method->_class->rt_constant_pool;
     auto stack = frame->operation_stack;
     auto val = cp->at(index);
@@ -68,16 +69,20 @@ void IDC::execute(Frame *frame) {
         stack->push_float(((RTFloat_Const*)val)->val);
     }else if (val -> type == CONSTANT_Class) {
         std::cout << "load class unsupported" << std::endl;
-    }else {
-        std::cout << "load unsupported const" << std::endl;
+    }else if (val -> type == CONSTANT_String){
+        auto str = ((RTString_Const*)(val))->val;
+        auto class_loader = frame->method->_class->class_loader;
+        auto object = new_string_object(class_loader, str);
+        std::cout << "[LDC:] put string => " << str << std::endl;
+        stack->push_ref(object);
     }
 }
 
-void IDC_W::execute(Frame *frame) {
-    ((IDC*)this)->execute(frame);
+void LDC_W::execute(Frame *frame) {
+    ((LDC*)this)->execute(frame);
 }
 
-void IDC2_W::execute(Frame *frame) {
+void LDC2_W::execute(Frame *frame) {
     auto cp = frame->method->_class->rt_constant_pool;
     auto stack = frame->operation_stack;
     auto val = cp->at(index);

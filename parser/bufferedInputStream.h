@@ -19,6 +19,7 @@ public:
     uint8 read_uint8();
     uint16 read_uint16();
     uint32 read_uint32();
+    void discard_uint8s(int size);
     float read_float();
     double read_double();
     uint64 read_uint64();

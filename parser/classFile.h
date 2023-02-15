@@ -18,7 +18,15 @@ public:
 };
 
 class FieldInfo : public MemberInfo {
-
+public:
+    AttributeInfo* get_first_constant_attribute() {
+        for (auto att: *attributes) {
+            if (att && att->attribute_name == "ConstantValue") {
+                return att;
+            }
+        }
+        return nullptr;
+    }
 };
 
 class MethodInfo : public MemberInfo {

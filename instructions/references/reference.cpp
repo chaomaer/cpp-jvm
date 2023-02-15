@@ -16,10 +16,10 @@ void static_put(OperationStack *stack, LocalVars *vars, Field *f) {
         vars->set_float(id, stack->pop_float());
     } else if (des == "D") {
         vars->set_double(id, stack->pop_double());
-    } else if (des == "L") {
+    } else if (des[0] == 'L' || des[0] == '[') {
         vars->set_ref(id, stack->pop_ref());
     } else {
-        std::cout << "unsupported descriptor" << std::endl;
+        std::cout << "[STATIC_PUT:] unsupported descriptor " << des << std::endl;
     }
 }
 
@@ -34,11 +34,11 @@ void static_get(OperationStack *stack, LocalVars *vars, Field *f) {
         stack->push_float(vars->get_float(id));
     } else if (des == "D") {
         stack->push_double(vars->get_double(id));
-    } else if (des == "L") {
+    } else if (des[0] == 'L' || des[0] == '[') {
         stack->push_ref(vars->get_ref(id));
     } else {
         stack->push_ref(vars->get_ref(id));
-        std::cout << "unsupported descriptor " << des << std::endl;
+        std::cout << "[STATIC_PUT:] unsupported descriptor " << des << std::endl;
     }
 }
 
@@ -61,12 +61,16 @@ void field_put(OperationStack *stack, Field *f) {
         auto val = stack->pop_double();
         auto ref = stack->pop_ref();
         ref->fields->set_double(id, val);
-    } else if (des == "L") {
+    } else if (des[0] == 'L') {
+        auto val = stack->pop_ref();
+        auto ref = stack->pop_ref();
+        ref->fields->set_ref(id, val);
+    } else if (des[0] == '['){
         auto val = stack->pop_ref();
         auto ref = stack->pop_ref();
         ref->fields->set_ref(id, val);
     } else {
-        std::cout << "unsupported descriptor" << std::endl;
+        std::cout << "[PUT_FIELD:] unsupported descriptor" << std::endl;
     }
 }
 
@@ -82,10 +86,10 @@ void field_get(OperationStack *stack, Field *f) {
         stack->push_float(vars->get_float(id));
     } else if (des == "D") {
         stack->push_double(vars->get_double(id));
-    } else if (des == "L") {
+    } else if (des[0] == 'L' || des[0] == '[') {
         stack->push_ref(vars->get_ref(id));
     } else {
-        std::cout << "unsupported descriptor" << std::endl;
+        std::cout << "[GET_FIELD:] unsupported descriptor " << des << std::endl;
     }
 }
 
@@ -170,7 +174,9 @@ void INVOKE_SPECIAL::execute(Frame *frame) {
 void _println(OperationStack* stack, std::string des) {
     if (des == "(Z)V") {
         std::cout << (stack->pop_int() == 1) << std::endl;
-    } else if (des == "(C)V" || des == "(B)V" || des == "(S)V" || des == "(I)V") {
+    } else if (des == "(C)V") {
+        printf("%c\n", stack->pop_int());
+    }else if (des == "(B)V" || des == "(S)V" || des == "(I)V") {
         std::cout << stack->pop_int() << std::endl;
     } else if (des == "(F)V") {
         std::cout << stack->pop_float() << std::endl;
@@ -178,8 +184,12 @@ void _println(OperationStack* stack, std::string des) {
         std::cout << stack->pop_double() << std::endl;
     } else if (des == "(J)V") {
         std::cout << stack->pop_long() << std::endl;
+    } else if (des == "(Ljava/lang/String;)V"){
+        auto object = stack->pop_ref();
+        auto s = to_string(object);
+        std::cout << s << std::endl;
     } else {
-        std::cout << "unsupported type" << std::endl;
+        std::cout << "unsupported type " << des << std::endl;
     }
     stack->pop_ref();
 }
@@ -230,4 +240,123 @@ void INVOKE_STATIC::execute(Frame *frame) {
     auto to_be_invoke = m_ref->resolve_method_ref();
     //todo 权限控制
     invoke_method(frame, to_be_invoke);
+}
+
+void NEW_ARRAY::execute(Frame *frame) {
+    auto a_type = this->index;
+    auto stack = frame->operation_stack;
+    int cnt = stack->pop_int();
+    auto class_loader = frame->method->_class->class_loader;
+    auto arr_class = get_primitive_array_class(class_loader, a_type);
+    auto object = arr_class->new_array(cnt);
+    std::cout << ((ArrayObject0*)(object))->type << std::endl;
+    stack->push_ref(object);
+}
+
+void A_NEW_ARRAY::execute(Frame *frame) {
+    auto rt_cp = frame->method->_class->rt_constant_pool;
+    auto stack = frame->operation_stack;
+    auto cnt = stack->pop_int();
+    auto class_ref = (ClassRef*)rt_cp->at(index);
+    auto _class = class_ref->resolve_class_ref();
+    auto arr_class = _class->array_class();
+    auto array_object = arr_class->new_array(cnt);
+    stack->push_ref(array_object);
+}
+
+Class* get_primitive_array_class(ClassLoader *pLoader, unsigned int type) {
+    switch (type) {
+        case AT_BOOLEAN:
+            return pLoader->load_class("[Z");
+        case AT_CHAR:
+            return pLoader->load_class("[C");
+        case AT_BYTE:
+            return pLoader->load_class("[B");
+        case AT_INT:
+            return pLoader->load_class("[I");
+        case AT_SHORT:
+            return pLoader->load_class("[S");
+        case AT_LONG:
+            return pLoader->load_class("[J");
+        case AT_FLOAT:
+            return pLoader->load_class("[F");
+        case AT_DOUBLE:
+            return pLoader->load_class("[D");
+        default:
+            std::cout << "error array type" << std::endl;
+            return nullptr;
+    }
+}
+
+void ARRAY_LENGTH::execute(Frame *frame) {
+    auto stack = frame->operation_stack;
+    auto object = stack->pop_ref();
+    auto a_type = ((ArrayObject0*)object)->type;
+    auto len = 0;
+    if (a_type == AT_LONG) {
+        len = ((ArrayObject<long>*)object)->size();
+    }else if (a_type == AT_INT) {
+        len = ((ArrayObject<int>*)object)->size();
+    }else if (a_type == AT_FLOAT) {
+        len = ((ArrayObject<float>*)object)->size();
+    }else if (a_type == AT_DOUBLE) {
+        len = ((ArrayObject<double>*)object)->size();
+    }else if (a_type == AT_OBJECT) {
+        len = ((ArrayObject<Object*>*)object)->size();
+    }
+    stack->push_int(len);
+}
+
+void C_A_LOAD::execute(Frame *frame) {
+    auto stack = frame->operation_stack;
+    auto idx = stack->pop_int();
+    auto array = stack->pop_ref();
+    assert(((ArrayObject0*)(array))->type == AT_INT);
+    auto ch = ((ArrayObject<int>*)(array))->arr->at(idx);
+    stack->push_int(ch);
+}
+
+void I_A_LOAD::execute(Frame *frame) {
+    auto stack = frame->operation_stack;
+    auto idx = stack->pop_int();
+    auto array = stack->pop_ref();
+    assert(((ArrayObject0*)(array))->type == AT_INT);
+    auto ch = ((ArrayObject<int>*)(array))->arr->at(idx);
+    stack->push_int(ch);
+}
+
+void A_A_LOAD::execute(Frame *frame) {
+    auto stack = frame->operation_stack;
+    auto idx = stack->pop_int();
+    auto array = stack->pop_ref();
+    assert(((ArrayObject0*)(array))->type == AT_OBJECT);
+    auto ch = ((ArrayObject<Object*>*)(array))->arr->at(idx);
+    stack->push_ref(ch);
+}
+
+void I_A_STORE::execute(Frame *frame) {
+    auto stack = frame->operation_stack;
+    auto val = stack->pop_int();
+    auto idx = stack->pop_int();
+    auto array = stack->pop_ref();
+    assert(((ArrayObject0*)(array))->type == AT_INT);
+    ((ArrayObject<int>*)(array))->arr->at(idx) = val;
+}
+
+void C_A_STORE::execute(Frame *frame) {
+    auto stack = frame->operation_stack;
+    auto val = stack->pop_int();
+    auto idx = stack->pop_int();
+    auto array = stack->pop_ref();
+    assert(((ArrayObject0*)(array))->type == AT_INT);
+    ((ArrayObject<int>*)(array))->arr->at(idx) = val;
+}
+
+void A_A_STORE::execute(Frame *frame) {
+    auto stack = frame->operation_stack;
+    auto val = stack->pop_ref();
+    auto idx = stack->pop_int();
+    auto array = stack->pop_ref();
+    assert(((ArrayObject0*)(array))->type == AT_OBJECT);
+    ((ArrayObject<Object*>*)(array))->arr->at(idx) = val;
 }

@@ -30,6 +30,10 @@ void A_LOAD_0::execute(Frame *frame) {
     _aload(frame, 0);
 }
 
+void A_LOAD_1::execute(Frame *frame) {
+    _aload(frame, 1);
+}
+
 void A_LOAD_2::execute(Frame *frame) {
     _aload(frame, 2);
 }

@@ -6,6 +6,8 @@
 #define CPP_JVM2_REFERENCE_H
 #include "instructions/base/instruction.h"
 
+Class* get_primitive_array_class(ClassLoader *pLoader, unsigned int type);
+
 class NEW : public Index16Instruction {
 public:
     void execute(Frame* frame);
@@ -62,6 +64,51 @@ public:
     int index;
 public:
     void fetch_operands(BytecodeReader* reader);
+    void execute(Frame* frame);
+};
+
+class NEW_ARRAY : public Index8Instruction {
+public:
+    void execute(Frame* frame);
+};
+
+class A_NEW_ARRAY : public Index16Instruction {
+public:
+    void execute(Frame* frame);
+};
+
+class ARRAY_LENGTH : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class A_A_LOAD : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class C_A_LOAD : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class I_A_LOAD : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class A_A_STORE : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class C_A_STORE : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class I_A_STORE : public NoOperandsInstruction {
+public:
     void execute(Frame* frame);
 };
 

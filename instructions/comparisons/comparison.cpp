@@ -19,3 +19,12 @@ void IF_EQ::execute(Frame *frame) {
         frame->branch(offset);
     }
 }
+
+void IF_A_CMP_NE::execute(Frame *frame) {
+    auto stack = frame->operation_stack;
+    auto ref2 = stack->pop_ref();
+    auto ref1 = stack->pop_ref();
+    if (ref1 != ref2) {
+        frame->branch(offset);
+    }
+}

@@ -24,7 +24,9 @@ void LocalVars::set_int(int idx, int val) {
 }
 
 int LocalVars::get_int(int idx) {
-    return _inner->at(idx)->numb;
+    //todo 绕行方案
+    auto s = _inner->at(idx);
+    return s == nullptr ? 0 : s->numb;
 }
 
 void LocalVars::set_float(int idx, float val) {
@@ -175,3 +177,32 @@ Frame::Frame(int maxStack, int maxLocals, Thread *thread, Method *method) :pc(0)
     local_vars = new LocalVars(max_locals);
     operation_stack = new OperationStack(max_stack);
 }
+
+template<typename T>
+ArrayObject<T>::ArrayObject(Class* aClass, int size) {
+    arr = new std::vector<T>(size);
+    _class = aClass;
+    if (std::is_same<T, float>::value) {
+        type = AT_FLOAT;
+    }else if (std::is_same<T, int>::value) {
+        type = AT_INT;
+    }else if (std::is_same<T, double>::value) {
+        type = AT_DOUBLE;
+    }else if (std::is_same<T, long>::value) {
+        type = AT_LONG;
+    }else {
+        type = AT_OBJECT;
+    }
+}
+
+template<typename T>
+int ArrayObject<T>::size() {
+    return arr->size();
+}
+
+//https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file
+template class ArrayObject<int>;
+template class ArrayObject<long>;
+template class ArrayObject<float>;
+template class ArrayObject<Object*>;
+template class ArrayObject<double>;

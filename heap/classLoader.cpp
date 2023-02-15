@@ -5,14 +5,36 @@
 #include "classLoader.h"
 #include "parser/byteCodeParser.h"
 #include "iostream"
+#include "accessFlags.h"
 
 Class *ClassLoader::load_class(std::string class_name) {
     if (class_map->count(class_name)) {
         return class_map->at(class_name);
     }
-    Class* val = load_non_array_class(class_name);
+    Class* val;
+    if (class_name[0] == '[') {
+        val = load_array_class(class_name);
+    }else {
+        val = load_non_array_class(class_name);
+    }
     std::cout << "load class " << class_name << " over " << std::endl;
     return val;
+}
+
+Class *ClassLoader::load_array_class(std::string class_name) {
+    auto _class = new Class;
+    _class->access_flags = ACC_PUBLIC;
+    _class->name = class_name;
+    std::cout << this << std::endl;
+    std::cout << this->class_map << std::endl;
+    _class->superClass_name = "java/lang/Object";
+    _class->super_class = load_class("java/lang/Object");
+    _class->interface_names = new std::vector<std::string>{"java/lang/Cloneable", "java/io/Serializable"};
+    _class->interface_classes = new std::vector<Class*>{
+        load_class("java/lang/Cloneable"), load_class("java/io/Serializable")};
+    _class->class_loader = this;
+    (*class_map)[class_name] = _class;
+    return _class;
 }
 
 Class* ClassLoader::load_non_array_class(std::string class_name) {
@@ -70,5 +92,12 @@ void ClassLoader::prepare(Class *pClass) {
 }
 
 ClassLoader::ClassLoader(): class_map(new std::unordered_map<std::string, Class*>) {
+}
+
+void ClassLoader::debug_class_map() {
+    auto it = class_map->begin();
+    for (; it != class_map->end(); it++) {
+        std::cout << it->first << " -> " << it->second << std::endl;
+    }
 }
 

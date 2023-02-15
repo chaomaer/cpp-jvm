@@ -19,6 +19,12 @@ uint16 BufferedInputStream::read_uint16() {
     return b1 << 8 | b2;
 }
 
+void BufferedInputStream::discard_uint8s(int size) {
+    for (int i = 0; i<size; i++) {
+        read_uint8();
+    }
+}
+
 uint32 BufferedInputStream::read_uint32() {
     uint32 b1 = read_uint8() & 0xff;
     uint32 b2 = read_uint8() & 0xff;

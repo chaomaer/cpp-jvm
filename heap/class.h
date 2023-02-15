@@ -36,6 +36,7 @@ public:
     int slot_id;
     int const_idx;
     bool is_long_or_double();
+    void copy_attributes(FieldInfo* field_info);
 };
 
 class Method : public ClassMember {
@@ -48,9 +49,14 @@ public:
     void copy_attributes(MethodInfo* method_info);
     int cal_arg_slot_number(std::string descriptor);
 };
+
 class ClassLoader;
 class LocalVars;
 class Object;
+
+Object* new_string_object(ClassLoader* class_loader, std::string str);
+std::string to_string(Object* object);
+
 class Class {
 public:
     std::vector<Field*>* new_fields(ClassFile* class_file);
@@ -60,6 +66,9 @@ public:
     Method* lookup_method(std::string name, std::string descriptor);
     Object* new_object();
     Method* find_main_method();
+    Class* array_class();
+    std::string get_array_name();
+    Object* new_array(int size);
     bool is_sub_of(Class* tClass);
     bool is_super_of(Class* tClass);
     bool is_public();
@@ -70,6 +79,7 @@ public:
     void init_static_fields();
     void init_one_static(Field* f);
     Class(ClassFile* class_file);
+    Class();
     uint16 access_flags;
     std::string name;
     std::string superClass_name;
