@@ -4,11 +4,9 @@
 
 #include "instruction.h"
 #include "iostream"
+#include "core/universe.h"
 
 void invoke_method(Frame* invoker_frame, Method* method) {
-    if (method->is_native()) {
-        return;
-    }
     auto t = invoker_frame->thread;
     auto new_frame = t->new_frame(method);
     t->push_frame(new_frame);

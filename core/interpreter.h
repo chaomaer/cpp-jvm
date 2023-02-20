@@ -9,6 +9,7 @@
 
 class Interpreter {
 public:
+public:
     void run(Method* classFile);
     void loop(Thread* thread);
 };

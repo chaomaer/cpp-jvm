@@ -68,13 +68,17 @@ void LDC::execute(Frame *frame) {
     }else if (val -> type == CONSTANT_Float) {
         stack->push_float(((RTFloat_Const*)val)->val);
     }else if (val -> type == CONSTANT_Class) {
-        std::cout << "load class unsupported" << std::endl;
+        auto class_ref = (ClassRef*)val;
+        auto _class = class_ref->resolve_class_ref();
+        stack->push_ref(_class->jClass);
     }else if (val -> type == CONSTANT_String){
         auto str = ((RTString_Const*)(val))->val;
         auto class_loader = frame->method->_class->class_loader;
         auto object = new_string_object(class_loader, str);
         std::cout << "[LDC:] put string => " << str << std::endl;
         stack->push_ref(object);
+    }else {
+        assert(false && "ldc error => unreachable");
     }
 }
 

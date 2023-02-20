@@ -16,6 +16,7 @@ class Object {
 public:
     Class* _class;
     LocalVars* fields;
+    Class* extra;
 };
 
 class ArrayObject0 : public Object {

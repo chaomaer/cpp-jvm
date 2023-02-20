@@ -90,4 +90,10 @@ public:
     RTString_Const();
 };
 
+class RTClass_Const : public RTConst {
+public:
+    std::string val;
+    RTClass_Const();
+};
+
 #endif //CPP_JVM2_RTCONSTS_H

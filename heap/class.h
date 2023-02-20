@@ -40,6 +40,13 @@ public:
     void copy_attributes(FieldInfo* field_info);
 };
 
+class MethodType {
+public:
+    MethodType();
+    std::vector<std::string>* argsType;
+    std::string retType;
+};
+
 class Method : public ClassMember {
 public:
     int arg_slot_number;
@@ -48,7 +55,9 @@ public:
     uint8* code;
 public:
     void copy_attributes(MethodInfo* method_info);
-    int cal_arg_slot_number(std::string descriptor);
+    int cal_arg_slot_number();
+    MethodType* parse_descriptor();
+    void inject_code_attribute(std::string type);
 };
 
 class ClassLoader;
@@ -95,6 +104,7 @@ public:
     uint32 instance_slot_count;
     uint32 static_slot_count;
     LocalVars* static_vars;
+    Object* jClass; // the instance of the java/lang/Class
 };
 
 #endif //CPP_JVM2_CLASS_H

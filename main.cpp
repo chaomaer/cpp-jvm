@@ -3,17 +3,24 @@
 #include "core/frame.h"
 #include "test/test_frame.h"
 #include "core/interpreter.h"
+#include "core/universe.h"
+#include "native/object.h"
 
 void start_jvm() {
-    auto class_loader = new ClassLoader();
-    class_loader->class_paths->push_back("/Users/chaomaer/jvm-demo/target/classes/");
-    class_loader->class_paths->push_back("/Users/chaomaer/Desktop/lib/");
+    // init native function
+    Universe::init();
+    auto registry = Universe::registry;
+    NativeObject::init(registry);
+    std::cout << registry->size() << std::endl;
+    auto ps = new std::vector<std::string>{"/Users/chaomaer/jvm-demo/target/classes/", "/Users/chaomaer/Desktop/lib/"};
+    auto class_loader = new ClassLoader(ps);
     auto class_name = "BubbleSortTest";
     auto main_class = class_loader->load_class(class_name);
 
     auto main_method = main_class->find_main_method();
     if (main_method == nullptr) {
         std::cout << "no main method" << std::endl;
+        exit(-1);
     }
     auto interpreter = new Interpreter();
     interpreter->run(main_method );

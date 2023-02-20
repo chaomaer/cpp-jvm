@@ -98,6 +98,8 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new I_INC();
         case 0x99:
             return new IF_EQ();
+        case 0x9a:
+            return new IF_NE();
         case 0xa2:
             return new IF_I_CMP_GE();
         case 0xa3:
@@ -110,6 +112,8 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new GOTO();
         case 0xac:
             return new I_RETURN();
+        case 0xb0:
+            return new A_RETURN();
         case 0xb1:
             return new RETURN();
         case 0xb2:
@@ -140,6 +144,10 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new CHECK_CAST();
         case 0xc1:
             return new IS_INSTANCE_OF();
+        case 0xc7:
+            return new IF_NON_NULL();
+        case 0xfe:
+            return new INVOKE_NATIVE();
         default:
             printf("op_code : %x is not supported\n", op_code);
             exit(0);

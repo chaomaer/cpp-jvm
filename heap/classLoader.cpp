@@ -17,10 +17,15 @@ Class *ClassLoader::load_class(std::string class_name) {
         val = load_array_class(class_name);
     } else {
         val = load_non_array_class(class_name);
-        // execute <clinit>
-        val->execute_class_init();
+    }
+    if (class_map->count("java/lang/Class")) {
+        auto c_class = class_map->at("java/lang/Class");
+        val->jClass = c_class->new_object();
+        val->jClass->extra = val;
     }
     std::cout << "load class " << class_name << " over " << std::endl;
+    // execute <clinit>
+    val->execute_class_init();
     return val;
 }
 
@@ -28,8 +33,6 @@ Class *ClassLoader::load_array_class(std::string class_name) {
     auto _class = new Class;
     _class->access_flags = ACC_PUBLIC;
     _class->name = class_name;
-    std::cout << this << std::endl;
-    std::cout << this->class_map << std::endl;
     _class->superClass_name = "java/lang/Object";
     _class->super_class = load_class("java/lang/Object");
     _class->interface_names = new std::vector<std::string>{"java/lang/Cloneable", "java/io/Serializable"};
@@ -37,6 +40,20 @@ Class *ClassLoader::load_array_class(std::string class_name) {
             load_class("java/lang/Cloneable"), load_class("java/io/Serializable")};
     _class->class_loader = this;
     (*class_map)[class_name] = _class;
+    return _class;
+}
+
+Class *ClassLoader::load_primitive_class(std::string class_name) {
+    auto _class = new Class;
+    _class->access_flags = ACC_PUBLIC;
+    _class->name = class_name;
+    _class->class_loader = this;
+    (*class_map)[class_name] = _class;
+    if (class_map->count("java/lang/Class")) {
+        auto c_class = class_map->at("java/lang/Class");
+        _class->jClass = c_class->new_object();
+        _class->jClass->extra = _class;
+    }
     return _class;
 }
 
@@ -54,9 +71,9 @@ Class *ClassLoader::load_non_array_class(std::string class_name) {
 ClassFile *ClassLoader::read_class(std::string class_name) {
     std::string full_class_name = "";
     bool find = false;
-    for (std::string& path : *class_paths) {
+    for (std::string &path: *class_paths) {
         full_class_name = path + class_name + ".class";
-        if (std::filesystem::exists(full_class_name)){
+        if (std::filesystem::exists(full_class_name)) {
             find = true;
             break;
         }
@@ -107,8 +124,18 @@ void ClassLoader::prepare(Class *pClass) {
     pClass->init_static_fields();
 }
 
-ClassLoader::ClassLoader() : class_map(new std::unordered_map<std::string, Class *>),
-                             class_paths(new std::vector<std::string>) {
+ClassLoader::ClassLoader(std::vector<std::string> *paths) :
+        class_map(new std::unordered_map<std::string, Class *>),
+        class_paths(paths) {
+    auto *_class = load_class("java/lang/Class");
+    // while load "java/lang/Class", subclasses is loaded firstly.
+    for (auto& [k, v] : *class_map) {
+        v->jClass = _class->new_object();
+        v->jClass->extra = v;
+    }
+    for (auto& [k, v]: primitive_types) {
+        load_primitive_class(k);
+    }
 }
 
 void ClassLoader::debug_class_map() {

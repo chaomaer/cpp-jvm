@@ -3,6 +3,7 @@
 //
 
 #include "reference.h"
+#include "core/universe.h"
 #include <iostream>
 
 void static_put(OperationStack *stack, LocalVars *vars, Field *f) {
@@ -240,6 +241,15 @@ void INVOKE_STATIC::execute(Frame *frame) {
     auto to_be_invoke = m_ref->resolve_method_ref();
     //todo 权限控制
     invoke_method(frame, to_be_invoke);
+}
+
+void INVOKE_NATIVE::execute(Frame *frame) {
+    auto method = frame->method;
+    assert(method->is_native());
+    auto native_m = Universe::registry->find_native_method(
+                method->_class->name, method->name, method->descriptor);
+    native_m(frame);
+    std::cout << method->_class->name << " " << method->name << " " << method->descriptor << std::endl;
 }
 
 void NEW_ARRAY::execute(Frame *frame) {

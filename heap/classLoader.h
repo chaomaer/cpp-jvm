@@ -16,8 +16,9 @@ public:
 private:
     Class* load_non_array_class(std::string class_name);
     Class* load_array_class(std::string class_name);
+    Class* load_primitive_class(std::string class_name);
 public:
-    ClassLoader();
+    ClassLoader(std::vector<std::string>* path);
     Class* load_class(std::string class_name);
     ClassFile* read_class(std::string class_name);
     Class* define_class(ClassFile* class_file);

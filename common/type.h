@@ -25,7 +25,9 @@ enum ARRAY_TYPE {
 };
 
 static std::unordered_map<std::string, std::string> primitive_types = {
+        {"void", "V"},
         {"int", "I"},
+        {"long", "J"},
         {"char", "C"},
         {"float", "F"},
         {"double", "D"},

@@ -67,6 +67,11 @@ public:
     void execute(Frame* frame);
 };
 
+class INVOKE_NATIVE : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 class NEW_ARRAY : public Index8Instruction {
 public:
     void execute(Frame* frame);

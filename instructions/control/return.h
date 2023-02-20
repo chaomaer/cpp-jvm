@@ -16,4 +16,9 @@ public:
     void execute(Frame* frame);
 };
 
+class A_RETURN : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 #endif //CPP_JVM2_RETURN_H

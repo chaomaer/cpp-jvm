@@ -53,6 +53,7 @@ public:
     uint16 max_stack;
     uint16 max_locals;
     uint8* byte_code;
+    int len;
     std::vector<ExceptionTableEntry*>* exception_table;
     std::vector<AttributeInfo*>* attributes;
 };

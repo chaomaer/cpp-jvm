@@ -98,6 +98,7 @@ AttributeInfo *ByteCodeParser::read_one_attribute(std::string attribute_name, Co
         code_attr->max_stack = br.read_uint16();
         code_attr->max_locals = br.read_uint16();
         int byte_cnt = br.read_uint32();
+        code_attr->len = byte_cnt;
         code_attr->byte_code = new uint8[byte_cnt];
         for (int i = 0; i < byte_cnt; i++) {
             code_attr->byte_code[i] = br.read_uint8();

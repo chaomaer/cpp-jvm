@@ -26,7 +26,17 @@ public:
     void execute(Frame* frame);
 };
 
+class IF_NE : public BranchInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 class IF_A_CMP_NE : public BranchInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class IF_NON_NULL : public BranchInstruction {
 public:
     void execute(Frame* frame);
 };

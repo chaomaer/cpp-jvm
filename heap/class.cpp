@@ -26,8 +26,12 @@ std::vector<Method *> *Class::new_methods(ClassFile *class_file) {
         auto new_m = new Method;
         new_m->copy_member_info(info);
         new_m->copy_attributes(info);
-        new_m->cal_arg_slot_number(new_m->descriptor);
+        new_m->cal_arg_slot_number();
         new_m->_class = this;
+        if (new_m->is_native()) {
+            auto m_type = new_m->parse_descriptor();
+            new_m->inject_code_attribute(new_m->parse_descriptor()->retType);
+        }
         vect->push_back(new_m);
     }
     return vect;
@@ -155,25 +159,25 @@ void Class::init_one_static(Field* f) {
     auto cp = f->_class->rt_constant_pool;
     if (des == "Z" || des == "B" || des == "C" || des == "S" || des == "I") {
         static_vars->set_int(slot_id, 0);
-        if (f->is_final()) {
+        if (f->is_final() && f->const_idx) {
             auto val = (RTInt_Const*)cp->at(f->const_idx);
             static_vars->set_int(slot_id, val->val);
         }
     } else if (des == "J") {
         static_vars->set_long(slot_id, 0);
-        if (f->is_final()) {
+        if (f->is_final() && f->const_idx) {
             auto val = (RTLong_Const*)cp->at(f->const_idx);
             static_vars->set_long(slot_id, val->val);
         }
     } else if (des == "F") {
         static_vars->set_float(slot_id, 0);
-        if (f->is_final()) {
+        if (f->is_final() && f->const_idx) {
             auto val = (RTFloat_Const*)cp->at(f->const_idx);
             static_vars->set_float(slot_id, val->val);
         }
     } else if (des == "D") {
         static_vars->set_double(slot_id, 0);
-        if (f->is_final()) {
+        if (f->is_final() && f->const_idx) {
             auto val = (RTDouble_Const*)cp->at(f->const_idx);
             static_vars->set_double(slot_id, val->val);
         }
@@ -250,15 +254,17 @@ Method* lookup_method_in_interfaces(std::vector<Class*>* _interfaces, std::strin
 
 Method *Class::lookup_method(std::string name, std::string descriptor) {
     Method *ret_m = nullptr;
-    for (auto m: *methods) {
-        if (m->name == name && m->descriptor == descriptor) {
-            return m;
+    if (methods != nullptr) {
+        for (auto m: *methods) {
+            if (m->name == name && m->descriptor == descriptor) {
+                return m;
+            }
         }
     }
     if (super_class != nullptr && !is_interface()) {
         ret_m = super_class->lookup_method(name, descriptor);
     }
-    return lookup_method_in_interfaces(interface_classes, name, descriptor);
+    return ret_m != nullptr? ret_m : lookup_method_in_interfaces(interface_classes, name, descriptor);
 }
 
 bool Class::is_interface() {
@@ -334,37 +340,81 @@ void Method::copy_attributes(MethodInfo *method_info) {
     code = attributes->byte_code;
 }
 
-int Method::cal_arg_slot_number(std::string descriptor) {
+MethodType* Method::parse_descriptor() {
+    assert(descriptor != "");
+    auto* methodType = new MethodType;
     auto right_brace = descriptor.find_last_of(')');
-    descriptor = descriptor.substr(1, right_brace-1);
+    auto ret_type = descriptor.substr(right_brace+1, descriptor.size()-right_brace-1);
+    methodType->retType = ret_type;
+    auto temp_descriptor = descriptor.substr(1, right_brace-1);
     int idx = 0;
-    int slot_number = 0;
     char x;
-    while (idx < descriptor.size()) {
-        x = descriptor[idx];
+    std::string cur = "";
+    while (idx < temp_descriptor.size()) {
+        x = temp_descriptor[idx];
         //array
         if (x == '[') {
-
+            cur += x;
         }else if (x == 'L') {
             while(x != ';') {
+                cur += x;
                 idx++;
-                x = descriptor[idx];
+                x = temp_descriptor[idx];
             }
-            slot_number++;
+            methodType->argsType->push_back(cur);
+            cur = "";
         }else if (x == 'J' || x == 'D') {
-            slot_number+=2;
+            cur += x;
+            methodType->argsType->push_back(cur);
+            cur = "";
         }else if (x == 'Z' || x == 'B' || x == 'C' || x == 'S' || x == 'I' || x == 'F' ){
-            slot_number++;
+            cur += x;
+            methodType->argsType->push_back(cur);
+            cur = "";
         }else {
             assert(false && "error in this place");
         }
         idx++;
+    }
+    return methodType;
+}
+
+int Method::cal_arg_slot_number() {
+    auto method_type = parse_descriptor();
+    int slot_number = 0;
+    for (std::string& s: *method_type->argsType) {
+        auto x = s[0];
+        if (x == 'J' || x == 'D') {
+            slot_number+=2;
+        }else {
+            slot_number++;
+        }
     }
     if (!is_static()) {
         slot_number++;
     }
     arg_slot_number = slot_number;
     return slot_number;
+}
+
+void Method::inject_code_attribute(std::string a_type) {
+    max_locals = arg_slot_number;
+    max_stack = 4;
+    char type = a_type[0];
+    if (type == 'V') {
+        code = new uint8[2] {0xfe, 0xb1}; // return
+    }else if (type == 'D') {
+        code = new uint8[2] {0xfe, 0xaf}; // dreturn
+    }else if (type == 'L' || type == '[') {
+        code = new uint8[2] {0xfe, 0xb0}; // areturn
+    }else if (type == 'F') {
+        code = new uint8[2] {0xfe, 0xae}; // freturn
+    }else if (type == 'J') {
+        code = new uint8[2] {0xfe, 0xad}; // lreturn
+    }else {
+        std::cout << "native return type: " << type << std::endl;
+        code = new uint8[2] {0xfe, 0xac}; //ireturn
+    }
 }
 
 bool ClassMember::is_static() {
@@ -415,4 +465,8 @@ std::string to_string(Object* object) {
         s.push_back((char )str_array->arr->at(i));
     }
     return s;
+}
+
+MethodType::MethodType() {
+    argsType = new std::vector<std::string>;
 }

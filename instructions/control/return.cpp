@@ -16,3 +16,11 @@ void I_RETURN::execute(Frame *frame) {
     std::cout << "ret_val: " << ret_val << std::endl;
     invoke_frame->operation_stack->push_int(ret_val);
 }
+
+void A_RETURN::execute(Frame *frame) {
+    auto cur_frame = frame->thread->pop_frame();
+    auto invoke_frame = frame->thread->top_frame();
+    auto ret_val = cur_frame->operation_stack->pop_ref();
+    std::cout << "ret_val: " << ret_val << std::endl;
+    invoke_frame->operation_stack->push_ref(ret_val);
+}

@@ -106,3 +106,7 @@ RTDouble_Const::RTDouble_Const() : RTConst(CONSTANT_Double) {
 RTString_Const::RTString_Const() : RTConst(CONSTANT_String) {
 
 }
+
+RTClass_Const::RTClass_Const(): RTConst(CONSTANT_Class){
+
+}

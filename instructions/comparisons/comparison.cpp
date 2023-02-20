@@ -38,11 +38,25 @@ void IF_EQ::execute(Frame *frame) {
     }
 }
 
+void IF_NE::execute(Frame *frame) {
+    auto val = frame->operation_stack->pop_int();
+    if (val != 0) {
+        frame->branch(offset);
+    }
+}
+
 void IF_A_CMP_NE::execute(Frame *frame) {
     auto stack = frame->operation_stack;
     auto ref2 = stack->pop_ref();
     auto ref1 = stack->pop_ref();
     if (ref1 != ref2) {
+        frame->branch(offset);
+    }
+}
+
+void IF_NON_NULL::execute(Frame *frame) {
+    auto ref = frame->operation_stack->pop_ref();
+    if (ref != nullptr) {
         frame->branch(offset);
     }
 }

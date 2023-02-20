@@ -71,7 +71,9 @@ void LocalVars::set_ref(int idx, Object *ref) {
 }
 
 Object *LocalVars::get_ref(int idx) {
-    return _inner->at(idx)->ref;
+    //todo 绕行方案
+    auto s = _inner->at(idx);
+    return s == nullptr ? nullptr : s->ref;
 }
 
 LocalVars::LocalVars(int size) {
