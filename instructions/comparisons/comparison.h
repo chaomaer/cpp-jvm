@@ -21,6 +21,16 @@ public:
     void execute(Frame* frame);
 };
 
+class IF_I_CMP_NE : public BranchInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class IF_I_CMP_LT : public BranchInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 class IF_EQ : public BranchInstruction {
 public:
     void execute(Frame* frame);
@@ -31,12 +41,32 @@ public:
     void execute(Frame* frame);
 };
 
+class IF_LE : public BranchInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class IF_GE : public BranchInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class IF_LT : public BranchInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 class IF_A_CMP_NE : public BranchInstruction {
 public:
     void execute(Frame* frame);
 };
 
 class IF_NON_NULL : public BranchInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class IF_NULL : public BranchInstruction {
 public:
     void execute(Frame* frame);
 };

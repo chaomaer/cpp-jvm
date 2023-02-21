@@ -16,7 +16,17 @@ public:
     void execute(Frame* frame);
 };
 
+class L_ADD : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 class I_SUB : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
+class I_MUL : public NoOperandsInstruction {
 public:
     void execute(Frame* frame);
 };

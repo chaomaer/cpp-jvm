@@ -10,6 +10,13 @@ void _iload(Frame* frame, int index);
 
 void _aload(Frame* frame, int index);
 
+void _lload(Frame* frame, int index);
+
+class L_LOAD : public Index8Instruction {
+public:
+    void execute(Frame* frame);
+};
+
 class I_LOAD : public Index8Instruction {
 public:
     void execute(Frame* frame);

@@ -29,6 +29,11 @@ public:
     void execute(Frame* frame);
 };
 
+class I_STORE_0 : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 class I_STORE_1 : public NoOperandsInstruction {
 public:
     void execute(Frame* frame);
@@ -48,6 +53,12 @@ class A_STORE : public Index8Instruction {
 public:
     void execute(Frame* frame);
 };
+
+class A_STORE_0 : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 
 class A_STORE_1 : public NoOperandsInstruction {
 public:

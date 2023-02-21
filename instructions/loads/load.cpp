@@ -14,6 +14,15 @@ void _aload(Frame* frame, int index) {
     frame->operation_stack->push_ref(val);
 }
 
+void _lload(Frame* frame, int index) {
+    auto val = frame->local_vars->get_long(index);
+    frame->operation_stack->push_long(val);
+}
+
+void L_LOAD::execute(Frame *frame) {
+    _lload(frame, this->index);
+}
+
 void I_LOAD::execute(Frame *frame) {
     _iload(frame, this->index);
 }

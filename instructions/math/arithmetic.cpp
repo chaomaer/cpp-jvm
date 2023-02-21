@@ -23,6 +23,13 @@ void I_ADD::execute(Frame *frame) {
     stack->push_int(v1 + v2);
 }
 
+void L_ADD::execute(Frame *frame) {
+    auto* stack = frame->operation_stack;
+    auto v2 = stack->pop_long();
+    auto v1 = stack->pop_long();
+    stack->push_long(v1 + v2);
+}
+
 void I_INC::fetch_operands(BytecodeReader *reader) {
     index = reader->read_uint8();
     _const = reader->read_uint8();
@@ -39,4 +46,11 @@ void I_SUB::execute(Frame *frame) {
     auto v2 = stack->pop_int();
     auto v1 = stack->pop_int();
     stack->push_int(v1 - v2);
+}
+
+void I_MUL::execute(Frame *frame) {
+    auto* stack = frame->operation_stack;
+    auto v2 = stack->pop_int();
+    auto v1 = stack->pop_int();
+    stack->push_int(v1 * v2);
 }

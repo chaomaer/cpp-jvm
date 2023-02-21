@@ -35,6 +35,14 @@ void S_I_PUSH::execute(Frame *frame) {
     frame->operation_stack->push_int(val);
 }
 
+void L_CONST_0::execute(Frame *frame) {
+    frame->operation_stack->push_long(0);
+}
+
+void L_CONST_1::execute(Frame *frame) {
+    frame->operation_stack->push_long(1);
+}
+
 void I_CONST_0::execute(Frame *frame) {
     frame->operation_stack->push_int(0);
 }

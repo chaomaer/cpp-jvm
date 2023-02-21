@@ -13,6 +13,8 @@ private:
     static void getPrimitiveClass(Frame* frame);
     static void getName0(Frame* frame);
     static void desiredAssertionStatus0(Frame* frame);
+    static void currentThread(Frame* frame);
+    static void getStackAccessControlContext(Frame* frame);
 public:
     static void init(NativeRegistry* registry);
 };

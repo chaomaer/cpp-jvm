@@ -16,6 +16,11 @@ public:
     void execute(Frame* frame);
 };
 
+class L_RETURN : public NoOperandsInstruction {
+public:
+    void execute(Frame* frame);
+};
+
 class A_RETURN : public NoOperandsInstruction {
 public:
     void execute(Frame* frame);

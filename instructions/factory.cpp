@@ -13,6 +13,7 @@
 #include "instructions/stacks/dup.h"
 #include "instructions/stacks/pop.h"
 #include "instructions/control/return.h"
+#include "instructions/monitor/monitor.h"
 
 Instruction *InstructionFactory::new_instruction(int op_code) {
     switch (op_code) {
@@ -30,6 +31,12 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new I_CONST_4();
         case 0x08:
             return new I_CONST_5();
+        case 0x09:
+            return new L_CONST_0();
+        case 0x0a:
+            return new L_CONST_1();
+        case 0x0e:
+            return new D_CONST_0();
         case 0x10:
             return new B_I_PUSH();
         case 0x11:
@@ -40,6 +47,8 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new LDC2_W();
         case 0x15:
             return new I_LOAD();
+        case 0x16:
+            return new L_LOAD();
         case 0x19:
             return new A_LOAD();
         case 0x1a:
@@ -68,12 +77,16 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new I_STORE();
         case 0x3a:
             return new A_STORE();
+        case 0x3b:
+            return new I_STORE_0();
         case 0x3c:
             return new I_STORE_1();
         case 0x3d:
             return new I_STORE_2();
         case 0x3e:
             return new I_STORE_3();
+        case 0x4b:
+            return new A_STORE_0();
         case 0x4c:
             return new A_STORE_1();
         case 0x4d:
@@ -90,16 +103,34 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new POP();
         case 0x59:
             return new DUP();
+        case 0x5a:
+            return new DUP_X1();
+        case 0x5c:
+            return new DUP2();
         case 0x60:
             return new I_ADD();
+        case 0x61:
+            return new L_ADD();
         case 0x64:
             return new I_SUB();
+        case 0x68:
+            return new I_MUL();
         case 0x84:
             return new I_INC();
         case 0x99:
             return new IF_EQ();
         case 0x9a:
             return new IF_NE();
+        case 0x9b:
+            return new IF_LT();
+        case 0x9c:
+            return new IF_GE();
+        case 0x9e:
+            return new IF_LE();
+        case 0xa0:
+            return new IF_I_CMP_NE();
+        case 0xa1:
+            return new IF_I_CMP_LT();
         case 0xa2:
             return new IF_I_CMP_GE();
         case 0xa3:
@@ -112,6 +143,8 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new GOTO();
         case 0xac:
             return new I_RETURN();
+        case 0xad:
+            return new L_RETURN();
         case 0xb0:
             return new A_RETURN();
         case 0xb1:
@@ -144,12 +177,18 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return new CHECK_CAST();
         case 0xc1:
             return new IS_INSTANCE_OF();
+        case 0xc2:
+            return new MONITOR_ENTER();
+        case 0xc3:
+            return new MONITOR_EXIT();
+        case 0xc6:
+            return new IF_NULL();
         case 0xc7:
             return new IF_NON_NULL();
         case 0xfe:
             return new INVOKE_NATIVE();
         default:
             printf("op_code : %x is not supported\n", op_code);
-            exit(0);
+            return nullptr;
     }
 }

@@ -19,6 +19,14 @@ class D_CONST_0 : public NoOperandsInstruction {
     void execute(Frame* frame);
 };
 
+class L_CONST_0 : public NoOperandsInstruction {
+    void execute(Frame* frame);
+};
+
+class L_CONST_1 : public NoOperandsInstruction {
+    void execute(Frame* frame);
+};
+
 class I_CONST_0 : public NoOperandsInstruction {
     void execute(Frame* frame);
 };
