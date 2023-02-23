@@ -299,11 +299,11 @@ void Class::execute_class_init() {
     if (m == nullptr) {
         return;
     }
-    auto thread = new Thread();
-    auto frame = thread->new_frame(m);
-    thread->push_frame(frame);
+    auto manager = new FrameManager();
+    auto frame = manager->new_frame(m);
+    manager->push_frame(frame);
     auto vm = new Interpreter();
-    vm->loop(thread);
+    vm->loop(manager);
 }
 
 Class *Class::array_class() {
@@ -338,6 +338,7 @@ void Method::copy_attributes(MethodInfo *method_info) {
     max_stack = attributes->max_stack;
     max_locals = attributes->max_locals;
     code = attributes->byte_code;
+    len = attributes->len;
 }
 
 MethodType* Method::parse_descriptor() {

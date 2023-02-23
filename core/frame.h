@@ -111,21 +111,20 @@ public:
 };
 
 class Method;
-class Thread;
+class FrameManager;
 class Frame {
 public:
     int pc;
     int max_stack;
     int max_locals;
-    Frame *lower;
-    Thread* thread;
+    FrameManager* manager;
     Method* method;
 public:
     LocalVars *local_vars;
     OperationStack *operation_stack;
 public:
-    Frame(int maxStack, int maxLocals, Thread* thread, Method* method);
-    Frame(Thread* thread, Method* method);
+    Frame(int maxStack, int maxLocals, FrameManager* manager, Method* method);
+    Frame(FrameManager* manager, Method* method);
     void branch(short offset);
 };
 

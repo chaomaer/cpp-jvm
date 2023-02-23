@@ -89,7 +89,7 @@ AttributeInfo *ByteCodeParser::read_one_attribute(std::string attribute_name, Co
         sig_attr->cp = cp;
         sig_attr->attribute_name = attribute_name;
         sig_attr->signature_index = br.read_uint16();
-        std::cout << cp->get_utf8(sig_attr->signature_index) << std::endl;
+        //std::cout << cp->get_utf8(sig_attr->signature_index) << std::endl;
         return sig_attr;
     } else if (attribute_name == "Code") {
         auto *code_attr = new CodeAttribute();

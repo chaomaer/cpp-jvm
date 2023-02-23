@@ -25,7 +25,7 @@ Class *ClassLoader::load_class(std::string class_name) {
     }
     std::cout << "load class " << class_name << " over " << std::endl;
     // execute <clinit>
-    val->execute_class_init();
+    //val->execute_class_init();
     return val;
 }
 

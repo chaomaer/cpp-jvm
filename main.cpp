@@ -22,8 +22,15 @@ void start_jvm() {
         std::cout << "no main method" << std::endl;
         exit(-1);
     }
-    auto interpreter = new Interpreter();
-    interpreter->run(main_method );
+    std::cout << "====" << std::this_thread::get_id() << "====" <<  std::endl;
+//    auto interpreter = new Interpreter;
+//    auto manager = new FrameManager();
+//    auto frame = manager->new_frame(main_method);
+//    manager->push_frame(frame);
+//    interpreter->loop(manager);
+    auto vm = new VMThread(main_method);
+    auto t = vm->start();
+    t->join();
 }
 
 int main() {

@@ -15,6 +15,7 @@ private:
     static void desiredAssertionStatus0(Frame* frame);
     static void currentThread(Frame* frame);
     static void getStackAccessControlContext(Frame* frame);
+    static void start0(Frame* frame);
 public:
     static void init(NativeRegistry* registry);
 };

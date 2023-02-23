@@ -163,7 +163,7 @@ Object *OperationStack::top_ref(int number) {
     return slot->ref;
 }
 
-Frame::Frame(Thread *thread, Method *method) : thread(thread), pc(0), method(method) {
+Frame::Frame(FrameManager* manager, Method *method) : manager(manager), pc(0), method(method) {
     max_locals = method->max_locals;
     max_stack = method->max_stack;
     local_vars = new LocalVars(max_locals);
@@ -171,11 +171,11 @@ Frame::Frame(Thread *thread, Method *method) : thread(thread), pc(0), method(met
 }
 
 void Frame::branch(short offset) {
-    pc = thread->pc + offset;
+    pc = manager->pc + offset;
 }
 
-Frame::Frame(int maxStack, int maxLocals, Thread *thread, Method *method) :pc(0), max_stack(maxStack), max_locals(maxLocals),
-                                                                            thread(thread), method(method) {
+Frame::Frame(int maxStack, int maxLocals, FrameManager *manager, Method *method) :pc(0), max_stack(maxStack), max_locals(maxLocals),
+                                                                                         manager(manager), method(method) {
     local_vars = new LocalVars(max_locals);
     operation_stack = new OperationStack(max_stack);
 }

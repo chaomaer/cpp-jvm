@@ -3,6 +3,7 @@
 //
 
 #include "object.h"
+#include "iostream"
 
 void NativeObject::init(NativeRegistry* registry){
     registry->_register("java/lang/Object", "getClass", "()Ljava/lang/Class;", getClass);
@@ -15,6 +16,8 @@ void NativeObject::init(NativeRegistry* registry){
                         "()Ljava/lang/Thread;", currentThread);
     registry->_register("java/security/AccessController", "getStackAccessControlContext",
                         "()Ljava/security/AccessControlContext;", getStackAccessControlContext);
+    registry->_register("java/lang/Thread", "start0",
+                        "()V", start0);
 }
 
 void NativeObject::getClass(Frame *frame) {
@@ -59,4 +62,18 @@ void NativeObject::currentThread(Frame *frame) {
 void NativeObject::getStackAccessControlContext(Frame *frame) {
     //todo 暂行方案
     frame->operation_stack->push_ref(nullptr);
+}
+
+void NativeObject::start0(Frame* frame) {
+    auto _this = frame->local_vars->get_ref(0);
+    auto class_loader = frame->method->_class->class_loader;
+    auto thread_class = class_loader->load_class("java/lang/Thread");
+    auto target_m = thread_class->lookup_method("run", "()V");
+    // 将 _this 推入operation_stack
+    auto manager = new FrameManager;
+    auto new_frame = manager->new_frame(target_m);
+    new_frame->local_vars->set_ref(0, _this);
+    manager->push_frame(new_frame);
+    auto new_t = VMThread(manager);
+    new_t.start();
 }

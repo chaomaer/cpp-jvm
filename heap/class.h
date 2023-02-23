@@ -52,6 +52,7 @@ public:
     int arg_slot_number;
     uint16 max_stack;
     uint16 max_locals;
+    uint16 len;
     uint8* code;
 public:
     void copy_attributes(MethodInfo* method_info);

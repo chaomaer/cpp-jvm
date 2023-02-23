@@ -7,7 +7,7 @@
 #include "core/universe.h"
 
 void invoke_method(Frame* invoker_frame, Method* method) {
-    auto t = invoker_frame->thread;
+    auto t = invoker_frame->manager;
     auto new_frame = t->new_frame(method);
     t->push_frame(new_frame);
     auto arg_slot = method->arg_slot_number;

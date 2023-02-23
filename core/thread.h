@@ -7,10 +7,15 @@
 #include "stack"
 #include "frame.h"
 #include "heap/class.h"
+#include "thread"
+#include "interpreter.h"
 
 class Frame;
 class Method;
-class Thread {
+class VMThread;
+class FrameManager{
+public:
+    VMThread* vm_thread;
 public:
     int pc;
     std::stack<Frame*> stack;
@@ -19,6 +24,18 @@ public:
     Frame* top_frame();
     bool empty_frame();
     void push_frame(Frame* frame);
+};
+class Interpreter;
+class VMThread {
+public:
+    std::vector<std::thread> invoked_threads;
+    VMThread(Method* method);
+    VMThread(FrameManager* manager);
+    FrameManager* manager;
+    Interpreter* interpreter;
+public:
+    std::thread* start();
+    void join();
 };
 
 #endif //CPP_JVM_THREAD_H
