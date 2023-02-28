@@ -20,6 +20,4 @@ public:
     static void init(NativeRegistry* registry);
 };
 
-
-
 #endif //CPP_JVM2_OBJECT_H

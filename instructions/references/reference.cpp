@@ -6,7 +6,7 @@
 #include "core/universe.h"
 #include <iostream>
 
-void static_put(OperationStack *stack, LocalVars *vars, Field *f) {
+void static_put(OperationStack *stack, ObjectLocalVars *vars, Field *f) {
     auto des = f->descriptor;
     auto id = f->slot_id;
     if (des == "Z" || des == "B" || des == "C" || des == "S" || des == "I") {
@@ -24,7 +24,7 @@ void static_put(OperationStack *stack, LocalVars *vars, Field *f) {
     }
 }
 
-void static_get(OperationStack *stack, LocalVars *vars, Field *f) {
+void static_get(OperationStack *stack, ObjectLocalVars *vars, Field *f) {
     auto id = f->slot_id;
     auto des = f->descriptor;
     if (des == "Z" || des == "B" || des == "C" || des == "S" || des == "I") {
@@ -313,7 +313,7 @@ void ARRAY_LENGTH::execute(Frame *frame) {
     }else if (a_type == AT_DOUBLE) {
         len = ((ArrayObject<double>*)object)->size();
     }else if (a_type == AT_OBJECT) {
-        len = ((ArrayObject<Object*>*)object)->size();
+        len = ((ArrayObject<HeapObject*>*)object)->size();
     }
     stack->push_int(len);
 }
@@ -341,7 +341,7 @@ void A_A_LOAD::execute(Frame *frame) {
     auto idx = stack->pop_int();
     auto array = stack->pop_ref();
     assert(((ArrayObject0*)(array))->type == AT_OBJECT);
-    auto ch = ((ArrayObject<Object*>*)(array))->arr->at(idx);
+    auto ch = ((ArrayObject<HeapObject*>*)(array))->arr->at(idx);
     stack->push_ref(ch);
 }
 
@@ -369,5 +369,5 @@ void A_A_STORE::execute(Frame *frame) {
     auto idx = stack->pop_int();
     auto array = stack->pop_ref();
     assert(((ArrayObject0*)(array))->type == AT_OBJECT);
-    ((ArrayObject<Object*>*)(array))->arr->at(idx) = val;
+    ((ArrayObject<HeapObject*>*)(array))->arr->at(idx) = val;
 }

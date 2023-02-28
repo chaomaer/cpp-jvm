@@ -10,6 +10,7 @@
 #include "common/heapString.h"
 #include "core/frame.h"
 #include "parser/classFile.h"
+#include "common/localArray.h"
 #include "classLoader.h"
 #include "rtConsts.h"
 
@@ -63,11 +64,9 @@ public:
 };
 
 class ClassLoader;
-class LocalVars;
-class Object;
 
-Object* new_string_object(ClassLoader* class_loader, std::string str);
-std::string to_string(Object* object);
+HeapObject* new_string_object(ClassLoader* class_loader, std::string str);
+std::string to_string(HeapObject* object);
 
 class Class {
 public:
@@ -76,11 +75,11 @@ public:
     RTConstantPool* new_rt_constant_pool(ClassFile* class_file);
     Field* lookup_field(std::string name, std::string descriptor);
     Method* lookup_method(std::string name, std::string descriptor);
-    Object* new_object();
+    HeapObject* new_object();
     Method* find_main_method();
     Class* array_class();
     std::string get_array_name();
-    Object* new_array(int size);
+    HeapObject* new_array(int size);
     void execute_class_init();
     bool is_sub_of(Class* tClass);
     bool is_super_of(Class* tClass);
@@ -105,8 +104,8 @@ public:
     HeapVector<Class*>* interface_classes;
     uint32 instance_slot_count;
     uint32 static_slot_count;
-    LocalVars* static_vars;
-    Object* jClass; // the instance of the java/lang/Class
+    ObjectLocalVars* static_vars;
+    HeapObject* jClass; // the instance of the java/lang/Class
 };
 
 #endif //CPP_JVM2_CLASS_H

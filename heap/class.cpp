@@ -191,7 +191,7 @@ void Class::init_one_static(Field* f) {
 }
 
 void Class::init_static_fields() {
-    static_vars = new LocalVars(static_slot_count);
+    static_vars = new ObjectLocalVars(static_slot_count);
     for (int i = 0; i<fields->size(); i++) {
         auto f = fields->at(i);
         if (f->is_static()) {
@@ -212,11 +212,11 @@ Field *Class::lookup_field(std::string name, std::string descriptor) {
     return nullptr;
 }
 
-Object *Class::new_object() {
-    auto object = new Object;
+HeapObject *Class::new_object() {
+    auto object = new HeapObject;
     object->_class = this;
     // todo: 需要初始化field
-    object->fields = new LocalVars(instance_slot_count);
+    object->fields = new ObjectLocalVars(instance_slot_count);
     return object;
 }
 
@@ -282,7 +282,7 @@ Class::Class() {
 
 }
 
-Object *Class::new_array(int size) {
+HeapObject *Class::new_array(int size) {
     if (name == "[Z" || name == "[B" || name == "[I" || name == "[S" || name == "[C") {
         return new ArrayObject<int>(this, size);
     }else if (name == "[J") {
@@ -292,7 +292,7 @@ Object *Class::new_array(int size) {
     }else if (name == "[D") {
         return new ArrayObject<double>(this, size);
     }else if (name[0] == '[') {
-        return new ArrayObject<Object*>(this, size);
+        return new ArrayObject<HeapObject*>(this, size);
     }
     return nullptr;
 }
@@ -449,7 +449,7 @@ bool ClassMember::is_native() {
 RTConstantPool::RTConstantPool(int size) : HeapVector<RTConst*>(size){
 }
 
-Object* new_string_object(ClassLoader* class_loader, std::string str) {
+HeapObject* new_string_object(ClassLoader* class_loader, std::string str) {
     auto _class = class_loader->load_class("java/lang/String");
     auto object = _class->new_object();
     auto idx = object->_class->lookup_field("value", "[C")->slot_id;
@@ -461,7 +461,7 @@ Object* new_string_object(ClassLoader* class_loader, std::string str) {
     return object;
 }
 
-std::string to_string(Object* object) {
+std::string to_string(HeapObject* object) {
     auto idx = object->_class->lookup_field("value", "[C")->slot_id;
     auto str_array = (ArrayObject<int>*)object->fields->get_ref(idx);
     std::string s;
