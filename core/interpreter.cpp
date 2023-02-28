@@ -15,10 +15,6 @@ void Interpreter::run(Method* method) {
 }
 
 void Interpreter::loop(FrameManager* manager) {
-    std::cout << "id << "<< std::this_thread::get_id() << ">>" << std::endl;
-    printf("*********** in loop: << manager %p => %p, threads_vect %p\n", manager, manager->vm_thread, &manager->vm_thread->invoked_threads);
-    printf("*********** in loop: << manager %p => %p, threads_vect %p\n", manager, manager->vm_thread, &manager->vm_thread->invoked_threads);
-    printf("*********** in loop: << manager %p => %p, threads_vect %p\n", manager, manager->vm_thread, &manager->vm_thread->invoked_threads);
     auto reader = new BytecodeReader();
     while (true) {
         if (manager->empty_frame()) {

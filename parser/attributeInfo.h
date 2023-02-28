@@ -11,6 +11,7 @@
 
 class AttributeInfo {
 public:
+    virtual ~AttributeInfo() = default;
     std::string attribute_name;
 };
 
@@ -49,6 +50,7 @@ public:
 
 class CodeAttribute : public AttributeInfo {
 public:
+    ~CodeAttribute();
     ConstantPool* cp;
     uint16 max_stack;
     uint16 max_locals;
@@ -60,6 +62,7 @@ public:
 
 class ExceptionAttribute : public AttributeInfo {
 public:
+    ~ExceptionAttribute();
     uint16 number_of_exceptions;
     uint16* exception_index_table;
 };
@@ -74,6 +77,7 @@ public:
 
 class LineNumberTableAttribute : public AttributeInfo {
 public:
+    ~LineNumberTableAttribute();
     uint16 line_number_table_length;
     std::vector<LineNumberTableEntry*>* lineNumberTable;
 };
@@ -91,6 +95,7 @@ public:
 
 class LocalVariableTableAttribute : public AttributeInfo {
 public:
+    ~LocalVariableTableAttribute();
     uint16 local_variable_table_length;
     std::vector<LocalVariableTableEntry*>* localVariableTable;
 };

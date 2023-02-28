@@ -35,9 +35,12 @@ Class *ClassLoader::load_array_class(std::string class_name) {
     _class->name = class_name;
     _class->superClass_name = "java/lang/Object";
     _class->super_class = load_class("java/lang/Object");
-    _class->interface_names = new std::vector<std::string>{"java/lang/Cloneable", "java/io/Serializable"};
-    _class->interface_classes = new std::vector<Class *>{
-            load_class("java/lang/Cloneable"), load_class("java/io/Serializable")};
+    _class->interface_names = new HeapVector<std::string>();
+    _class->interface_names->push_back("java/lang/Cloneable");
+    _class->interface_names->push_back("java/io/Serializable");
+    _class->interface_classes = new HeapVector<Class *>;
+    _class->interface_classes->push_back(load_class("java/lang/Cloneable"));
+    _class->interface_classes->push_back(load_class("java/io/Serializable"));
     _class->class_loader = this;
     (*class_map)[class_name] = _class;
     return _class;
@@ -104,7 +107,7 @@ void ClassLoader::resolve_super(Class *pClass) {
 
 void ClassLoader::resolve_interfaces(Class *pClass) {
     auto interfaces = *pClass->interface_names;
-    pClass->interface_classes = new std::vector<Class *>(interfaces.size());
+    pClass->interface_classes = new HeapVector<Class *>(interfaces.size());
     for (int i = 0; i < interfaces.size(); i++) {
         pClass->interface_classes->at(i) = load_class(interfaces.at(i));
     }

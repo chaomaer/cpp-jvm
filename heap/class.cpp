@@ -5,9 +5,10 @@
 #include "class.h"
 #include "accessFlags.h"
 #include "core/interpreter.h"
+#include "common/heapVector.h"
 
-std::vector<Field *> *Class::new_fields(ClassFile *class_file) {
-    auto vect = new std::vector<Field*>;
+HeapVector<Field *> *Class::new_fields(ClassFile *class_file) {
+    auto vect = new HeapVector<Field*>;
     for (int i = 0; i<class_file->fields_count; i++) {
         auto info = class_file->fields->at(i);
         auto new_f = new Field;
@@ -19,8 +20,8 @@ std::vector<Field *> *Class::new_fields(ClassFile *class_file) {
     return vect;
 }
 
-std::vector<Method *> *Class::new_methods(ClassFile *class_file) {
-    auto vect = new std::vector<Method*>;
+HeapVector<Method *> *Class::new_methods(ClassFile *class_file) {
+    auto vect = new HeapVector<Method*>;
     for (int i = 0; i<class_file->methods_count; i++) {
         auto info = class_file->methods->at(i);
         auto new_m = new Method;
@@ -29,7 +30,6 @@ std::vector<Method *> *Class::new_methods(ClassFile *class_file) {
         new_m->cal_arg_slot_number();
         new_m->_class = this;
         if (new_m->is_native()) {
-            auto m_type = new_m->parse_descriptor();
             new_m->inject_code_attribute(new_m->parse_descriptor()->retType);
         }
         vect->push_back(new_m);
@@ -107,12 +107,15 @@ RTConstantPool *Class::new_rt_constant_pool(ClassFile *class_file) {
 }
 
 Class::Class(ClassFile *class_file) {
+    // move to heap memory
     this->access_flags = class_file->access_flags;
     this->superClass_name = class_file->get_superClass_name();
     this->name = class_file->get_class_name();
     std::cout << superClass_name << "<-" << name << std::endl;
-    this->interface_names = class_file->get_interface_names();
-
+    this->interface_names = new HeapVector<std::string>;
+    for (auto& s: *class_file->get_interface_names()) {
+        this->interface_names->push_back(s);
+    }
     this->rt_constant_pool = this->new_rt_constant_pool(class_file);
     this->fields = this->new_fields(class_file);
     this->methods = this->new_methods(class_file);
@@ -239,7 +242,7 @@ Method *Class::find_main_method() {
     return nullptr;
 }
 
-Method* lookup_method_in_interfaces(std::vector<Class*>* _interfaces, std::string name, std::string descriptor) {
+Method* lookup_method_in_interfaces(HeapVector<Class*>* _interfaces, std::string name, std::string descriptor) {
     for (auto inter : *_interfaces) {
         for (auto m: *inter->methods) {
             if (m->name == name && m->descriptor == descriptor) {
@@ -443,7 +446,7 @@ bool ClassMember::is_native() {
     return access_flag & ACC_NATIVE;
 }
 
-RTConstantPool::RTConstantPool(int size) : std::vector<RTConst*>(size){
+RTConstantPool::RTConstantPool(int size) : HeapVector<RTConst*>(size){
 }
 
 Object* new_string_object(ClassLoader* class_loader, std::string str) {
@@ -469,5 +472,5 @@ std::string to_string(Object* object) {
 }
 
 MethodType::MethodType() {
-    argsType = new std::vector<std::string>;
+    argsType = new HeapVector<std::string>;
 }

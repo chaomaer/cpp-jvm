@@ -6,7 +6,8 @@
 #define CPP_JVM2_CLASS_H
 #include "common/type.h"
 #include "string"
-#include "vector"
+#include "common/heapVector.h"
+#include "common/heapString.h"
 #include "core/frame.h"
 #include "parser/classFile.h"
 #include "classLoader.h"
@@ -14,7 +15,7 @@
 
 class Class;
 class RTConst;
-class RTConstantPool : public std::vector<RTConst*>{
+class RTConstantPool : public HeapVector<RTConst*>{
 public:
     RTConstantPool(int size);
     Class* _class;
@@ -43,7 +44,7 @@ public:
 class MethodType {
 public:
     MethodType();
-    std::vector<std::string>* argsType;
+    HeapVector<std::string>* argsType;
     std::string retType;
 };
 
@@ -70,8 +71,8 @@ std::string to_string(Object* object);
 
 class Class {
 public:
-    std::vector<Field*>* new_fields(ClassFile* class_file);
-    std::vector<Method*>* new_methods(ClassFile* class_file);
+    HeapVector<Field*>* new_fields(ClassFile* class_file);
+    HeapVector<Method*>* new_methods(ClassFile* class_file);
     RTConstantPool* new_rt_constant_pool(ClassFile* class_file);
     Field* lookup_field(std::string name, std::string descriptor);
     Method* lookup_method(std::string name, std::string descriptor);
@@ -95,13 +96,13 @@ public:
     uint16 access_flags;
     std::string name;
     std::string superClass_name;
-    std::vector<std::string>* interface_names;
+    HeapVector<std::string>* interface_names;
     RTConstantPool* rt_constant_pool;
-    std::vector<Field*>* fields;
-    std::vector<Method*>* methods;
+    HeapVector<Field*>* fields;
+    HeapVector<Method*>* methods;
     ClassLoader* class_loader;
     Class* super_class;
-    std::vector<Class*>* interface_classes;
+    HeapVector<Class*>* interface_classes;
     uint32 instance_slot_count;
     uint32 static_slot_count;
     LocalVars* static_vars;

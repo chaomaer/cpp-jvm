@@ -173,6 +173,7 @@ void INVOKE_SPECIAL::execute(Frame *frame) {
 }
 
 void _println(OperationStack* stack, std::string des) {
+    std::lock_guard<std::mutex> guard(m);
     if (des == "(Z)V") {
         std::cout << (stack->pop_int() == 1) << std::endl;
     } else if (des == "(C)V") {

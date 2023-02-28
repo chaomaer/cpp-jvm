@@ -35,7 +35,6 @@ public:
     Interpreter* interpreter;
 public:
     std::thread* start();
-    void join();
 };
 
 #endif //CPP_JVM_THREAD_H
