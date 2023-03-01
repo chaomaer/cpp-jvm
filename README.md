@@ -1,4 +1,4 @@
-# AN Educational Java Virtual Machine
+# An Educational Java Virtual Machine
 
 ## 功能实现
 - :white_check_mark: 加载class文件
@@ -9,4 +9,3 @@
 - :white_large_square: monitor支持
 - :white_large_square: 垃圾回收GC
 - :white_large_square: 多亲委派类加载
-- 
