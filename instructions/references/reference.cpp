@@ -6,7 +6,7 @@
 #include "core/universe.h"
 #include <iostream>
 
-void static_put(OperationStack *stack, LocalVars *vars, Field *f) {
+void static_put(OperationStack *stack, ObjectLocalVars *vars, Field *f) {
     auto des = f->descriptor;
     auto id = f->slot_id;
     if (des == "Z" || des == "B" || des == "C" || des == "S" || des == "I") {
@@ -24,7 +24,7 @@ void static_put(OperationStack *stack, LocalVars *vars, Field *f) {
     }
 }
 
-void static_get(OperationStack *stack, LocalVars *vars, Field *f) {
+void static_get(OperationStack *stack, ObjectLocalVars *vars, Field *f) {
     auto id = f->slot_id;
     auto des = f->descriptor;
     if (des == "Z" || des == "B" || des == "C" || des == "S" || des == "I") {
@@ -173,6 +173,7 @@ void INVOKE_SPECIAL::execute(Frame *frame) {
 }
 
 void _println(OperationStack* stack, std::string des) {
+    std::lock_guard<std::mutex> guard(m);
     if (des == "(Z)V") {
         std::cout << (stack->pop_int() == 1) << std::endl;
     } else if (des == "(C)V") {
@@ -201,7 +202,7 @@ void INVOKE_VIRTUAL::execute(Frame *frame) {
     auto stack = frame->operation_stack;
     if (method_ref->name == "println") {
         //std::cout << "************" << std::endl;
-        _println(stack, method_ref->descriptor);
+        _println(stack, heapStr_to_str(method_ref->descriptor));
         //std::cout << "************" << std::endl;
         return;
     }
@@ -218,7 +219,7 @@ void INVOKE_INTERFACE::execute(Frame *frame) {
     auto stack = frame->operation_stack;
     if (method_ref->name == "println") {
         std::cout << "************" << std::endl;
-        _println(stack, method_ref->descriptor);
+        _println(stack, heapStr_to_str(method_ref->descriptor));
         std::cout << "************" << std::endl;
         return;
     }
@@ -247,7 +248,7 @@ void INVOKE_NATIVE::execute(Frame *frame) {
     auto method = frame->method;
     assert(method->is_native());
     auto native_m = Universe::registry->find_native_method(
-                method->_class->name, method->name, method->descriptor);
+    heapStr_to_str(method->_class->name), heapStr_to_str(method->name), heapStr_to_str(method->descriptor));
     native_m(frame);
     std::cout << method->_class->name << " " << method->name << " " << method->descriptor << std::endl;
 }
@@ -312,7 +313,7 @@ void ARRAY_LENGTH::execute(Frame *frame) {
     }else if (a_type == AT_DOUBLE) {
         len = ((ArrayObject<double>*)object)->size();
     }else if (a_type == AT_OBJECT) {
-        len = ((ArrayObject<Object*>*)object)->size();
+        len = ((ArrayObject<HeapObject*>*)object)->size();
     }
     stack->push_int(len);
 }
@@ -340,7 +341,7 @@ void A_A_LOAD::execute(Frame *frame) {
     auto idx = stack->pop_int();
     auto array = stack->pop_ref();
     assert(((ArrayObject0*)(array))->type == AT_OBJECT);
-    auto ch = ((ArrayObject<Object*>*)(array))->arr->at(idx);
+    auto ch = ((ArrayObject<HeapObject*>*)(array))->arr->at(idx);
     stack->push_ref(ch);
 }
 
@@ -368,5 +369,5 @@ void A_A_STORE::execute(Frame *frame) {
     auto idx = stack->pop_int();
     auto array = stack->pop_ref();
     assert(((ArrayObject0*)(array))->type == AT_OBJECT);
-    ((ArrayObject<Object*>*)(array))->arr->at(idx) = val;
+    ((ArrayObject<HeapObject*>*)(array))->arr->at(idx) = val;
 }

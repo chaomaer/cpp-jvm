@@ -26,6 +26,7 @@
 
 class ConstantInfo {
 public:
+    virtual ~ConstantInfo() = default;
     int type;
     ConstantInfo(int type);
 };

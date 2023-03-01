@@ -28,14 +28,12 @@ public:
 class Interpreter;
 class VMThread {
 public:
-    std::vector<std::thread> invoked_threads;
     VMThread(Method* method);
     VMThread(FrameManager* manager);
     FrameManager* manager;
     Interpreter* interpreter;
 public:
     std::thread* start();
-    void join();
 };
 
 #endif //CPP_JVM_THREAD_H

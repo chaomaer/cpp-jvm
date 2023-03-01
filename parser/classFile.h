@@ -10,6 +10,7 @@
 
 class MemberInfo {
 public:
+    virtual ~MemberInfo();
     ConstantPool* cp;
     uint16 access_flags;
     uint16 name_index;
@@ -43,6 +44,7 @@ public:
 
 class ClassFile {
 public:
+    ~ClassFile();
     std::string get_class_name();
     std::string get_superClass_name();
     std::vector<std::string>* get_interface_names();

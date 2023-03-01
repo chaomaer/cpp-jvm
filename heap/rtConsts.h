@@ -34,8 +34,8 @@ public:
 class MemberRef : public ClassRef {
 public:
     MemberRef(ConstantMemberRefInfo* info, RTConstantPool* cp, int type);
-    std::string name;
-    std::string descriptor;
+    HeapString name;
+    HeapString descriptor;
     void copy_member_info(ConstantMemberRefInfo* info);
 };
 
@@ -86,13 +86,13 @@ public:
 
 class RTString_Const : public RTConst {
 public:
-    std::string val;
+    HeapString val;
     RTString_Const();
 };
 
 class RTClass_Const : public RTConst {
 public:
-    std::string val;
+    HeapString val;
     RTClass_Const();
 };
 

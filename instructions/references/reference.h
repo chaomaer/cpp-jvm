@@ -8,6 +8,10 @@
 
 Class* get_primitive_array_class(ClassLoader *pLoader, unsigned int type);
 
+static std::mutex m;
+
+void _println(OperationStack* stack, std::string des);
+
 class NEW : public Index16Instruction {
 public:
     void execute(Frame* frame);

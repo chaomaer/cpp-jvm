@@ -6,15 +6,19 @@
 #include "core/universe.h"
 #include "native/object.h"
 
-void start_jvm() {
+void start_jvm(int argc, char** argv) {
     // init native function
     Universe::init();
     auto registry = Universe::registry;
     NativeObject::init(registry);
     std::cout << registry->size() << std::endl;
-    auto ps = new std::vector<std::string>{"/Users/chaomaer/jvm-demo/target/classes/", "/Users/chaomaer/Desktop/lib/"};
+    auto ps = new std::vector<std::string>(argc);
+    for (int i = 1; i<argc; i++) {
+        std::cout << argv[i] << " =>加入classpath" << std::endl;
+        ps->push_back(std::string(argv[i]));
+    }
     auto class_loader = new ClassLoader(ps);
-    auto class_name = "BubbleSortTest";
+    auto class_name = argv[argc-1];
     auto main_class = class_loader->load_class(class_name);
 
     auto main_method = main_class->find_main_method();
@@ -22,17 +26,15 @@ void start_jvm() {
         std::cout << "no main method" << std::endl;
         exit(-1);
     }
-    std::cout << "====" << std::this_thread::get_id() << "====" <<  std::endl;
-//    auto interpreter = new Interpreter;
-//    auto manager = new FrameManager();
-//    auto frame = manager->new_frame(main_method);
-//    manager->push_frame(frame);
-//    interpreter->loop(manager);
     auto vm = new VMThread(main_method);
     auto t = vm->start();
     t->join();
+    delete vm;
+    delete class_loader;
+    delete ps;
 }
 
-int main() {
-    start_jvm();
+int main(int argc, char** argv) {
+    start_jvm(argc, argv);
+    std::cout << MemBuffer::index << std::endl;
 }

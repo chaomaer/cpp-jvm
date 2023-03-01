@@ -5,9 +5,10 @@
 #include "class.h"
 #include "accessFlags.h"
 #include "core/interpreter.h"
+#include "common/heapVector.h"
 
-std::vector<Field *> *Class::new_fields(ClassFile *class_file) {
-    auto vect = new std::vector<Field*>;
+HeapVector<Field *> *Class::new_fields(ClassFile *class_file) {
+    auto vect = new HeapVector<Field*>;
     for (int i = 0; i<class_file->fields_count; i++) {
         auto info = class_file->fields->at(i);
         auto new_f = new Field;
@@ -19,8 +20,8 @@ std::vector<Field *> *Class::new_fields(ClassFile *class_file) {
     return vect;
 }
 
-std::vector<Method *> *Class::new_methods(ClassFile *class_file) {
-    auto vect = new std::vector<Method*>;
+HeapVector<Method *> *Class::new_methods(ClassFile *class_file) {
+    auto vect = new HeapVector<Method*>;
     for (int i = 0; i<class_file->methods_count; i++) {
         auto info = class_file->methods->at(i);
         auto new_m = new Method;
@@ -29,7 +30,6 @@ std::vector<Method *> *Class::new_methods(ClassFile *class_file) {
         new_m->cal_arg_slot_number();
         new_m->_class = this;
         if (new_m->is_native()) {
-            auto m_type = new_m->parse_descriptor();
             new_m->inject_code_attribute(new_m->parse_descriptor()->retType);
         }
         vect->push_back(new_m);
@@ -74,7 +74,7 @@ RTConstantPool *Class::new_rt_constant_pool(ClassFile *class_file) {
             auto idx = ((ConstantStringInfo*)(_const))->string_index;
             auto val = cp->get_utf8(idx);
             auto rt_val = new RTString_Const;
-            rt_val->val = val;
+            rt_val->val = str_to_heapStr(val);
             rt_cp->at(i) = rt_val;
         }else if (type == CONSTANT_Fieldref) {
             auto info = (ConstantFieldRefInfo*)(_const);
@@ -107,12 +107,15 @@ RTConstantPool *Class::new_rt_constant_pool(ClassFile *class_file) {
 }
 
 Class::Class(ClassFile *class_file) {
+    // move to heap memory
     this->access_flags = class_file->access_flags;
-    this->superClass_name = class_file->get_superClass_name();
-    this->name = class_file->get_class_name();
+    this->superClass_name = str_to_heapStr(class_file->get_superClass_name());
+    this->name = str_to_heapStr(class_file->get_class_name());
     std::cout << superClass_name << "<-" << name << std::endl;
-    this->interface_names = class_file->get_interface_names();
-
+    this->interface_names = new HeapVector<HeapString>;
+    for (auto& s: *class_file->get_interface_names()) {
+        this->interface_names->push_back(str_to_heapStr(s));
+    }
     this->rt_constant_pool = this->new_rt_constant_pool(class_file);
     this->fields = this->new_fields(class_file);
     this->methods = this->new_methods(class_file);
@@ -188,7 +191,7 @@ void Class::init_one_static(Field* f) {
 }
 
 void Class::init_static_fields() {
-    static_vars = new LocalVars(static_slot_count);
+    static_vars = new ObjectLocalVars(static_slot_count);
     for (int i = 0; i<fields->size(); i++) {
         auto f = fields->at(i);
         if (f->is_static()) {
@@ -197,7 +200,7 @@ void Class::init_static_fields() {
     }
 }
 
-Field *Class::lookup_field(std::string name, std::string descriptor) {
+Field *Class::lookup_field(HeapString name, HeapString descriptor) {
     for (auto f : *fields) {
         if (f->name == name && f->descriptor == descriptor) {
             return f;
@@ -209,11 +212,11 @@ Field *Class::lookup_field(std::string name, std::string descriptor) {
     return nullptr;
 }
 
-Object *Class::new_object() {
-    auto object = new Object;
+HeapObject *Class::new_object() {
+    auto object = new HeapObject;
     object->_class = this;
     // todo: 需要初始化field
-    object->fields = new LocalVars(instance_slot_count);
+    object->fields = new ObjectLocalVars(instance_slot_count);
     return object;
 }
 
@@ -239,7 +242,7 @@ Method *Class::find_main_method() {
     return nullptr;
 }
 
-Method* lookup_method_in_interfaces(std::vector<Class*>* _interfaces, std::string name, std::string descriptor) {
+Method* lookup_method_in_interfaces(HeapVector<Class*>* _interfaces, HeapString name, HeapString descriptor) {
     for (auto inter : *_interfaces) {
         for (auto m: *inter->methods) {
             if (m->name == name && m->descriptor == descriptor) {
@@ -252,7 +255,7 @@ Method* lookup_method_in_interfaces(std::vector<Class*>* _interfaces, std::strin
     return nullptr;
 }
 
-Method *Class::lookup_method(std::string name, std::string descriptor) {
+Method *Class::lookup_method(HeapString name, HeapString descriptor) {
     Method *ret_m = nullptr;
     if (methods != nullptr) {
         for (auto m: *methods) {
@@ -279,7 +282,7 @@ Class::Class() {
 
 }
 
-Object *Class::new_array(int size) {
+HeapObject *Class::new_array(int size) {
     if (name == "[Z" || name == "[B" || name == "[I" || name == "[S" || name == "[C") {
         return new ArrayObject<int>(this, size);
     }else if (name == "[J") {
@@ -289,7 +292,7 @@ Object *Class::new_array(int size) {
     }else if (name == "[D") {
         return new ArrayObject<double>(this, size);
     }else if (name[0] == '[') {
-        return new ArrayObject<Object*>(this, size);
+        return new ArrayObject<HeapObject*>(this, size);
     }
     return nullptr;
 }
@@ -308,26 +311,27 @@ void Class::execute_class_init() {
 
 Class *Class::array_class() {
     auto array_name = get_array_name();
-    return class_loader->load_class(array_name);
+    return class_loader->load_class(heapStr_to_str(array_name));
 }
 
-std::string Class::get_array_name() {
+HeapString Class::get_array_name() {
+    auto str_name = heapStr_to_str(name);
     //array
     if (name[0] == '[') {
-        return "[" + name;
+        return str_to_heapStr("[" + str_name);
     }
     //primitive
-    if (primitive_types.count(name)) {
-        return "[" + primitive_types[name];
+    if (primitive_types.count(str_name)) {
+        return str_to_heapStr("[" + primitive_types[str_name]);
     }
     //object
-    return "[L" + name + ";";
+    return str_to_heapStr("[L" + str_name + ";");
 }
 
 void ClassMember::copy_member_info(MemberInfo *member_info) {
     access_flag = member_info->access_flags;
-    name = member_info->cp->get_utf8(member_info->name_index);
-    descriptor = member_info->cp->get_utf8(member_info->descriptor_index);
+    name = str_to_heapStr(member_info->cp->get_utf8(member_info->name_index));
+    descriptor = str_to_heapStr(member_info->cp->get_utf8(member_info->descriptor_index));
 }
 
 void Method::copy_attributes(MethodInfo *method_info) {
@@ -337,8 +341,10 @@ void Method::copy_attributes(MethodInfo *method_info) {
     }
     max_stack = attributes->max_stack;
     max_locals = attributes->max_locals;
-    code = attributes->byte_code;
+    // copy to heap;
     len = attributes->len;
+    code = static_cast<uint8 *>(MemBuffer::allocate(len));
+    memcpy(code, attributes->byte_code, len);
 }
 
 MethodType* Method::parse_descriptor() {
@@ -346,7 +352,7 @@ MethodType* Method::parse_descriptor() {
     auto* methodType = new MethodType;
     auto right_brace = descriptor.find_last_of(')');
     auto ret_type = descriptor.substr(right_brace+1, descriptor.size()-right_brace-1);
-    methodType->retType = ret_type;
+    methodType->retType = *(HeapString*)&ret_type;
     auto temp_descriptor = descriptor.substr(1, right_brace-1);
     int idx = 0;
     char x;
@@ -362,15 +368,15 @@ MethodType* Method::parse_descriptor() {
                 idx++;
                 x = temp_descriptor[idx];
             }
-            methodType->argsType->push_back(cur);
+            methodType->argsType->push_back(str_to_heapStr(cur));
             cur = "";
         }else if (x == 'J' || x == 'D') {
             cur += x;
-            methodType->argsType->push_back(cur);
+            methodType->argsType->push_back(str_to_heapStr(cur));
             cur = "";
         }else if (x == 'Z' || x == 'B' || x == 'C' || x == 'S' || x == 'I' || x == 'F' ){
             cur += x;
-            methodType->argsType->push_back(cur);
+            methodType->argsType->push_back(str_to_heapStr(cur));
             cur = "";
         }else {
             assert(false && "error in this place");
@@ -383,7 +389,7 @@ MethodType* Method::parse_descriptor() {
 int Method::cal_arg_slot_number() {
     auto method_type = parse_descriptor();
     int slot_number = 0;
-    for (std::string& s: *method_type->argsType) {
+    for (HeapString& s: *method_type->argsType) {
         auto x = s[0];
         if (x == 'J' || x == 'D') {
             slot_number+=2;
@@ -398,7 +404,7 @@ int Method::cal_arg_slot_number() {
     return slot_number;
 }
 
-void Method::inject_code_attribute(std::string a_type) {
+void Method::inject_code_attribute(HeapString a_type) {
     max_locals = arg_slot_number;
     max_stack = 4;
     char type = a_type[0];
@@ -443,10 +449,20 @@ bool ClassMember::is_native() {
     return access_flag & ACC_NATIVE;
 }
 
-RTConstantPool::RTConstantPool(int size) : std::vector<RTConst*>(size){
+RTConstantPool::RTConstantPool(int size) : HeapVector<RTConst*>(size){
 }
 
-Object* new_string_object(ClassLoader* class_loader, std::string str) {
+HeapString to_string(HeapObject* object) {
+    auto idx = object->_class->lookup_field("value", "[C")->slot_id;
+    auto str_array = (ArrayObject<int>*)object->fields->get_ref(idx);
+    std::string s;
+    for (int i = 0; i<str_array->size(); i++) {
+        s.push_back((char )str_array->arr->at(i));
+    }
+    return str_to_heapStr(s);
+}
+
+HeapObject* new_string_object(ClassLoader* class_loader, HeapString str) {
     auto _class = class_loader->load_class("java/lang/String");
     auto object = _class->new_object();
     auto idx = object->_class->lookup_field("value", "[C")->slot_id;
@@ -458,16 +474,6 @@ Object* new_string_object(ClassLoader* class_loader, std::string str) {
     return object;
 }
 
-std::string to_string(Object* object) {
-    auto idx = object->_class->lookup_field("value", "[C")->slot_id;
-    auto str_array = (ArrayObject<int>*)object->fields->get_ref(idx);
-    std::string s;
-    for (int i = 0; i<str_array->size(); i++) {
-        s.push_back((char )str_array->arr->at(i));
-    }
-    return s;
-}
-
 MethodType::MethodType() {
-    argsType = new std::vector<std::string>;
+    argsType = new HeapVector<HeapString>;
 }

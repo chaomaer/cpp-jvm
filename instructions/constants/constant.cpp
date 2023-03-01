@@ -83,7 +83,7 @@ void LDC::execute(Frame *frame) {
         auto str = ((RTString_Const*)(val))->val;
         auto class_loader = frame->method->_class->class_loader;
         auto object = new_string_object(class_loader, str);
-        std::cout << "[LDC:] put string => " << str << std::endl;
+        //std::cout << "[LDC:] put string => " << str << std::endl;
         stack->push_ref(object);
     }else {
         assert(false && "ldc error => unreachable");

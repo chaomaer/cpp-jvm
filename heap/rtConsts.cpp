@@ -28,8 +28,8 @@ Class *ClassRef::resolve_class_ref() {
 
 void MemberRef::copy_member_info(ConstantMemberRefInfo *info) {
     auto p = info->cp->get_name_and_type(info->name_and_type_index);
-    name = p.first;
-    descriptor = p.second;
+    name = str_to_heapStr(p.first);
+    descriptor = str_to_heapStr(p.second);
     class_name = info->cp->get_class_name(info->class_index);
 }
 
@@ -42,7 +42,6 @@ Field *FieldRef::resolve_field_ref() {
     if (field != nullptr) {
         return field;
     }
-    auto cur_class = rt_cp->_class;
     auto ref_class = resolve_class_ref();
     // todo 权限控制
     field = ref_class->lookup_field(name, descriptor);
@@ -66,7 +65,6 @@ Method *MethodRef::resolve_method_ref() {
     if (method != nullptr) {
         return method;
     }
-    auto cur_class = rt_cp->_class;
     auto ref_class = resolve_class_ref();
     method = ref_class->lookup_method(name, descriptor);
     method->_class = ref_class;

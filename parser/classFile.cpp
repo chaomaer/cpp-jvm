@@ -19,3 +19,32 @@ std::vector<std::string> *ClassFile::get_interface_names() {
     }
     return vect;
 }
+
+ClassFile::~ClassFile() {
+    //delete info in constant pool and constant pool
+    for (auto& info : *constant_pool) {
+        delete info;
+    }
+    delete constant_pool;
+    //delete field
+    for (auto& f: *fields) {
+        delete f;
+    }
+    delete fields;
+    //delete field
+    for (auto& m: *methods) {
+        delete m;
+    }
+    delete methods;
+    for (auto& att: *attributes) {
+        delete att;
+    }
+    delete attributes;
+}
+
+MemberInfo::~MemberInfo() {
+    for (auto& info : *attributes) {
+        delete info;
+    }
+    delete attributes;
+}

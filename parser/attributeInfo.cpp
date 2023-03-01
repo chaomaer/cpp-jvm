@@ -17,3 +17,33 @@ LocalVariableTableEntry::LocalVariableTableEntry(uint16 startPc, uint16 length, 
                                                                                          descriptor_index(
                                                                                                  descriptorIndex),
                                                                                          index(index) {}
+
+CodeAttribute::~CodeAttribute() {
+    delete byte_code;
+    for (auto& et : *exception_table) {
+        delete et;
+    }
+    delete exception_table;
+    for (auto& att: *attributes) {
+        delete att;
+    }
+    delete attributes;
+}
+
+ExceptionAttribute::~ExceptionAttribute() {
+    delete exception_index_table;
+}
+
+LineNumberTableAttribute::~LineNumberTableAttribute() {
+    for (auto& le: *lineNumberTable) {
+        delete le;
+    }
+    delete lineNumberTable;
+}
+
+LocalVariableTableAttribute::~LocalVariableTableAttribute() {
+    for (auto& le: *localVariableTable) {
+        delete le;
+    }
+    delete localVariableTable;
+}

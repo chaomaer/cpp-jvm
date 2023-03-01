@@ -6,15 +6,17 @@
 #define CPP_JVM2_CLASS_H
 #include "common/type.h"
 #include "string"
-#include "vector"
+#include "common/heapVector.h"
+#include "common/heapString.h"
 #include "core/frame.h"
 #include "parser/classFile.h"
+#include "common/localArray.h"
 #include "classLoader.h"
 #include "rtConsts.h"
 
 class Class;
 class RTConst;
-class RTConstantPool : public std::vector<RTConst*>{
+class RTConstantPool : public HeapVector<RTConst*>{
 public:
     RTConstantPool(int size);
     Class* _class;
@@ -23,8 +25,8 @@ public:
 class ClassMember {
 public:
     uint16 access_flag;
-    std::string name;
-    std::string descriptor;
+    HeapString name;
+    HeapString descriptor;
     Class* _class;
     bool is_static();
     bool is_final();
@@ -43,8 +45,8 @@ public:
 class MethodType {
 public:
     MethodType();
-    std::vector<std::string>* argsType;
-    std::string retType;
+    HeapVector<HeapString>* argsType;
+    HeapString retType;
 };
 
 class Method : public ClassMember {
@@ -58,28 +60,26 @@ public:
     void copy_attributes(MethodInfo* method_info);
     int cal_arg_slot_number();
     MethodType* parse_descriptor();
-    void inject_code_attribute(std::string type);
+    void inject_code_attribute(HeapString type);
 };
 
 class ClassLoader;
-class LocalVars;
-class Object;
 
-Object* new_string_object(ClassLoader* class_loader, std::string str);
-std::string to_string(Object* object);
+HeapObject* new_string_object(ClassLoader* class_loader, HeapString str);
+HeapString to_string(HeapObject* object);
 
 class Class {
 public:
-    std::vector<Field*>* new_fields(ClassFile* class_file);
-    std::vector<Method*>* new_methods(ClassFile* class_file);
+    HeapVector<Field*>* new_fields(ClassFile* class_file);
+    HeapVector<Method*>* new_methods(ClassFile* class_file);
     RTConstantPool* new_rt_constant_pool(ClassFile* class_file);
-    Field* lookup_field(std::string name, std::string descriptor);
-    Method* lookup_method(std::string name, std::string descriptor);
-    Object* new_object();
+    Field* lookup_field(HeapString name, HeapString descriptor);
+    Method* lookup_method(HeapString name, HeapString descriptor);
+    HeapObject* new_object();
     Method* find_main_method();
     Class* array_class();
-    std::string get_array_name();
-    Object* new_array(int size);
+    HeapString get_array_name();
+    HeapObject* new_array(int size);
     void execute_class_init();
     bool is_sub_of(Class* tClass);
     bool is_super_of(Class* tClass);
@@ -93,19 +93,19 @@ public:
     Class(ClassFile* class_file);
     Class();
     uint16 access_flags;
-    std::string name;
-    std::string superClass_name;
-    std::vector<std::string>* interface_names;
+    HeapString name;
+    HeapString superClass_name;
+    HeapVector<HeapString>* interface_names;
     RTConstantPool* rt_constant_pool;
-    std::vector<Field*>* fields;
-    std::vector<Method*>* methods;
+    HeapVector<Field*>* fields;
+    HeapVector<Method*>* methods;
     ClassLoader* class_loader;
     Class* super_class;
-    std::vector<Class*>* interface_classes;
+    HeapVector<Class*>* interface_classes;
     uint32 instance_slot_count;
     uint32 static_slot_count;
-    LocalVars* static_vars;
-    Object* jClass; // the instance of the java/lang/Class
+    ObjectLocalVars* static_vars;
+    HeapObject* jClass; // the instance of the java/lang/Class
 };
 
 #endif //CPP_JVM2_CLASS_H
