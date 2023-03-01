@@ -341,8 +341,10 @@ void Method::copy_attributes(MethodInfo *method_info) {
     }
     max_stack = attributes->max_stack;
     max_locals = attributes->max_locals;
-    code = attributes->byte_code;
+    // copy to heap;
     len = attributes->len;
+    code = static_cast<uint8 *>(MemBuffer::allocate(len));
+    memcpy(code, attributes->byte_code, len);
 }
 
 MethodType* Method::parse_descriptor() {

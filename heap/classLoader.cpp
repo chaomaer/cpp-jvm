@@ -68,6 +68,7 @@ Class *ClassLoader::load_non_array_class(std::string class_name) {
     (*class_map)[class_name] = _class;
     // link class
     link_class(_class);
+    delete class_file;
     return _class;
 }
 

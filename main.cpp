@@ -29,4 +29,5 @@ void start_jvm() {
 
 int main() {
     start_jvm();
+    std::cout << MemBuffer::index << std::endl;
 }

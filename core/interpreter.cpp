@@ -30,7 +30,6 @@ void Interpreter::loop(FrameManager* manager) {
             reader->reset(frame->method->code, frame->pc);
             uint8 op_code = reader->read_uint8();
             //printf("op_code is %x with id: %p \n", op_code, std::this_thread::get_id());
-            //printf("manager is %x and invoke threads is: %x \n", frame->manager, frame->manager->vm_thread->invoked_threads);
             //std::cout << "class_name: " << class_name << " name: "<< method_name << std::endl;
             auto inst = InstructionFactory::new_instruction(op_code);
             if (inst == nullptr) {
