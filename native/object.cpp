@@ -29,7 +29,7 @@ void NativeObject::getPrimitiveClass(Frame *frame) {
     auto name = frame->local_vars->get_ref(0);
     auto str_name = to_string(name);
     auto loader = frame->method->_class->class_loader;
-    auto _class = loader->load_class(str_name);
+    auto _class = loader->load_class(heapStr_to_str(str_name));
     frame->operation_stack->push_ref(_class->jClass);
 }
 

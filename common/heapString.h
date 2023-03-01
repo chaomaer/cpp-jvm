@@ -16,4 +16,7 @@ public:
     }
 };
 
+std::string heapStr_to_str(HeapString s);
+HeapString str_to_heapStr(std::string s);
+
 #endif //CPP_JVM2_HEAPSTRING_H

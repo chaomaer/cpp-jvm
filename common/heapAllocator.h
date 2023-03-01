@@ -35,4 +35,10 @@ public:
     }
 };
 
+template<class T, class U>
+bool operator==(const HeapAllocator <T>&, const HeapAllocator <U>&) { return true; }
+
+template<class T, class U>
+bool operator!=(const HeapAllocator <T>&, const HeapAllocator <U>&) { return false; }
+
 #endif //CPP_JVM2_HEAPALLOCATOR_H

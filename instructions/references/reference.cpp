@@ -202,7 +202,7 @@ void INVOKE_VIRTUAL::execute(Frame *frame) {
     auto stack = frame->operation_stack;
     if (method_ref->name == "println") {
         //std::cout << "************" << std::endl;
-        _println(stack, method_ref->descriptor);
+        _println(stack, heapStr_to_str(method_ref->descriptor));
         //std::cout << "************" << std::endl;
         return;
     }
@@ -219,7 +219,7 @@ void INVOKE_INTERFACE::execute(Frame *frame) {
     auto stack = frame->operation_stack;
     if (method_ref->name == "println") {
         std::cout << "************" << std::endl;
-        _println(stack, method_ref->descriptor);
+        _println(stack, heapStr_to_str(method_ref->descriptor));
         std::cout << "************" << std::endl;
         return;
     }
@@ -248,7 +248,7 @@ void INVOKE_NATIVE::execute(Frame *frame) {
     auto method = frame->method;
     assert(method->is_native());
     auto native_m = Universe::registry->find_native_method(
-                method->_class->name, method->name, method->descriptor);
+    heapStr_to_str(method->_class->name), heapStr_to_str(method->name), heapStr_to_str(method->descriptor));
     native_m(frame);
     std::cout << method->_class->name << " " << method->name << " " << method->descriptor << std::endl;
 }

@@ -32,10 +32,10 @@ Class *ClassLoader::load_class(std::string class_name) {
 Class *ClassLoader::load_array_class(std::string class_name) {
     auto _class = new Class;
     _class->access_flags = ACC_PUBLIC;
-    _class->name = class_name;
+    _class->name = str_to_heapStr(class_name);
     _class->superClass_name = "java/lang/Object";
     _class->super_class = load_class("java/lang/Object");
-    _class->interface_names = new HeapVector<std::string>();
+    _class->interface_names = new HeapVector<HeapString>();
     _class->interface_names->push_back("java/lang/Cloneable");
     _class->interface_names->push_back("java/io/Serializable");
     _class->interface_classes = new HeapVector<Class *>;
@@ -49,7 +49,7 @@ Class *ClassLoader::load_array_class(std::string class_name) {
 Class *ClassLoader::load_primitive_class(std::string class_name) {
     auto _class = new Class;
     _class->access_flags = ACC_PUBLIC;
-    _class->name = class_name;
+    _class->name = str_to_heapStr(class_name);
     _class->class_loader = this;
     (*class_map)[class_name] = _class;
     if (class_map->count("java/lang/Class")) {
@@ -101,7 +101,7 @@ Class *ClassLoader::define_class(ClassFile *class_file) {
 void ClassLoader::resolve_super(Class *pClass) {
     auto name = pClass->name;
     if (name != "java/lang/Object") {
-        pClass->super_class = load_class(pClass->superClass_name);
+        pClass->super_class = load_class(heapStr_to_str(pClass->superClass_name));
     }
 }
 
@@ -109,7 +109,7 @@ void ClassLoader::resolve_interfaces(Class *pClass) {
     auto interfaces = *pClass->interface_names;
     pClass->interface_classes = new HeapVector<Class *>(interfaces.size());
     for (int i = 0; i < interfaces.size(); i++) {
-        pClass->interface_classes->at(i) = load_class(interfaces.at(i));
+        pClass->interface_classes->at(i) = load_class(heapStr_to_str(interfaces.at(i)));
     }
 }
 

@@ -25,8 +25,8 @@ public:
 class ClassMember {
 public:
     uint16 access_flag;
-    std::string name;
-    std::string descriptor;
+    HeapString name;
+    HeapString descriptor;
     Class* _class;
     bool is_static();
     bool is_final();
@@ -45,8 +45,8 @@ public:
 class MethodType {
 public:
     MethodType();
-    HeapVector<std::string>* argsType;
-    std::string retType;
+    HeapVector<HeapString>* argsType;
+    HeapString retType;
 };
 
 class Method : public ClassMember {
@@ -60,25 +60,25 @@ public:
     void copy_attributes(MethodInfo* method_info);
     int cal_arg_slot_number();
     MethodType* parse_descriptor();
-    void inject_code_attribute(std::string type);
+    void inject_code_attribute(HeapString type);
 };
 
 class ClassLoader;
 
-HeapObject* new_string_object(ClassLoader* class_loader, std::string str);
-std::string to_string(HeapObject* object);
+HeapObject* new_string_object(ClassLoader* class_loader, HeapString str);
+HeapString to_string(HeapObject* object);
 
 class Class {
 public:
     HeapVector<Field*>* new_fields(ClassFile* class_file);
     HeapVector<Method*>* new_methods(ClassFile* class_file);
     RTConstantPool* new_rt_constant_pool(ClassFile* class_file);
-    Field* lookup_field(std::string name, std::string descriptor);
-    Method* lookup_method(std::string name, std::string descriptor);
+    Field* lookup_field(HeapString name, HeapString descriptor);
+    Method* lookup_method(HeapString name, HeapString descriptor);
     HeapObject* new_object();
     Method* find_main_method();
     Class* array_class();
-    std::string get_array_name();
+    HeapString get_array_name();
     HeapObject* new_array(int size);
     void execute_class_init();
     bool is_sub_of(Class* tClass);
@@ -93,9 +93,9 @@ public:
     Class(ClassFile* class_file);
     Class();
     uint16 access_flags;
-    std::string name;
-    std::string superClass_name;
-    HeapVector<std::string>* interface_names;
+    HeapString name;
+    HeapString superClass_name;
+    HeapVector<HeapString>* interface_names;
     RTConstantPool* rt_constant_pool;
     HeapVector<Field*>* fields;
     HeapVector<Method*>* methods;
