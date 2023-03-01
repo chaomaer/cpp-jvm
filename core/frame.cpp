@@ -92,9 +92,18 @@ Frame::Frame(int maxStack, int maxLocals, FrameManager *manager, Method *method)
     operation_stack = new OperationStack(max_stack);
 }
 
+Frame::~Frame() {
+    if (local_vars != nullptr) {
+        delete local_vars;
+    }
+    if (operation_stack != nullptr) {
+        delete operation_stack;
+    }
+}
+
 template<typename T>
 ArrayObject<T>::ArrayObject(Class* aClass, int size) {
-    arr = new std::vector<T>(size);
+    arr = new HeapVector<T>(size);
     _class = aClass;
     if (std::is_same<T, float>::value) {
         type = AT_FLOAT;

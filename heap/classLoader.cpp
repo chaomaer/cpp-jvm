@@ -149,3 +149,7 @@ void ClassLoader::debug_class_map() {
     }
 }
 
+ClassLoader::~ClassLoader() {
+    delete class_map;
+}
+

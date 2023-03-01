@@ -24,6 +24,7 @@ public:
     OperationLocalVars *local_vars;
     OperationStack *operation_stack;
 public:
+    ~Frame();
     Frame(int maxStack, int maxLocals, FrameManager* manager, Method* method);
     Frame(FrameManager* manager, Method* method);
     void branch(short offset);

@@ -25,7 +25,7 @@ template<typename T>
 class ArrayObject : public ArrayObject0 {
 public:
     ArrayObject(Class* aClass, int size);
-    std::vector<T>* arr;
+    HeapVector<T>* arr;
     int size();
 };
 

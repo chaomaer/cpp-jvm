@@ -18,10 +18,6 @@ ClassFile *ByteCodeParser::parse() {
     classFile->minor_version = minor_version;
     uint16 major_version = br.read_uint16();
     classFile->major_version = major_version;
-//    std::cout << "magic_num " << magic_number << std::endl;
-//    std::cout << "minor_version " << minor_version << std::endl;
-//    std::cout << "major_version " << major_version << std::endl;
-    // loads constant pool
     auto cp = load_constant_pool();;
     classFile->constant_pool = cp;
     // access flag & this class & super class

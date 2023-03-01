@@ -28,7 +28,6 @@ public:
 class Interpreter;
 class VMThread {
 public:
-    std::vector<std::thread> invoked_threads;
     VMThread(Method* method);
     VMThread(FrameManager* manager);
     FrameManager* manager;
