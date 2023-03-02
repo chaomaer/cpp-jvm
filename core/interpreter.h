@@ -12,7 +12,7 @@ class Method;
 class Frame;
 class Interpreter {
 public:
-    std::vector<std::thread*>* invoked_threads;
+    std::vector<std::thread*>* invoked_threads{nullptr};
 public:
     Interpreter();
     void run(Method* classFile);

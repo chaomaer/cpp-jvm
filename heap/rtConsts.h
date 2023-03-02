@@ -20,7 +20,7 @@ class SymRef : public RTConst {
 public:
     RTConstantPool* rt_cp;
     std::string class_name;
-    Class* _class;
+    Class* _class{nullptr};
     SymRef(int type);
 };
 
@@ -42,7 +42,7 @@ public:
 class FieldRef : public MemberRef {
 public:
     FieldRef(ConstantFieldRefInfo* info, RTConstantPool* cp);
-    Field* field;
+    Field* field{nullptr};
 public:
     Field* resolve_field_ref();
 };
@@ -51,7 +51,7 @@ class MethodRef : public MemberRef {
 public:
     MethodRef(ConstantMethodRefInfo* info, RTConstantPool* cp);
     MethodRef(ConstantMethodRefInfo* info, RTConstantPool* cp, int type);
-    Method* method;
+    Method* method{nullptr};
     Method* resolve_method_ref();
 };
 

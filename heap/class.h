@@ -27,7 +27,7 @@ public:
     uint16 access_flag;
     HeapString name;
     HeapString descriptor;
-    Class* _class;
+    Class* _class{nullptr};
     bool is_static();
     bool is_final();
     bool is_native();

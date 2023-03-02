@@ -11,8 +11,8 @@ class Class;
 class ObjectLocalVars;
 class HeapObject {
 public:
-    Class* _class;
-    ObjectLocalVars* fields;
+    Class* _class{nullptr};
+    ObjectLocalVars* fields{nullptr};
     Class* extra;
 };
 
@@ -25,7 +25,7 @@ template<typename T>
 class ArrayObject : public ArrayObject0 {
 public:
     ArrayObject(Class* aClass, int size);
-    HeapVector<T>* arr;
+    HeapVector<T>* arr{nullptr};
     int size();
 };
 

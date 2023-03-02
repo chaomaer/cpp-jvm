@@ -15,14 +15,14 @@ class Method;
 class FrameManager;
 class Frame {
 public:
-    int pc;
+    int pc{0};
     int max_stack;
     int max_locals;
-    FrameManager* manager;
-    Method* method;
+    FrameManager* manager{nullptr};
+    Method* method{nullptr};
 public:
-    OperationLocalVars *local_vars;
-    OperationStack *operation_stack;
+    OperationLocalVars *local_vars{nullptr};
+    OperationStack *operation_stack{nullptr};
 public:
     ~Frame();
     Frame(int maxStack, int maxLocals, FrameManager* manager, Method* method);
