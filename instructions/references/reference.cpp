@@ -5,6 +5,7 @@
 #include "reference.h"
 #include "core/universe.h"
 #include <iostream>
+#include <cassert>
 
 void static_put(OperationStack *stack, ObjectLocalVars *vars, Field *f) {
     auto des = f->descriptor;

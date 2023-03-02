@@ -3,6 +3,7 @@
 //
 
 #include "native.h"
+#include <cassert>
 
 NativeRegistry* NativeRegistry::registry = nullptr;
 

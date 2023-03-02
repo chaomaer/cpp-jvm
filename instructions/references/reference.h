@@ -5,6 +5,7 @@
 #ifndef CPP_JVM2_REFERENCE_H
 #define CPP_JVM2_REFERENCE_H
 #include "instructions/base/instruction.h"
+#include <mutex>
 
 Class* get_primitive_array_class(ClassLoader *pLoader, unsigned int type);
 

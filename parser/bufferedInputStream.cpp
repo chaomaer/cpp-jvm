@@ -4,6 +4,7 @@
 
 #include "bufferedInputStream.h"
 #include "iostream"
+#include<cstring>
 
 uint8 BufferedInputStream::read_uint8() {
     if (_index >= BUFFER_SIZE) {

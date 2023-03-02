@@ -6,6 +6,7 @@
 #define CPP_JVM2_CONSTANT_H
 #include "instructions/base/instruction.h"
 #include "parser/constantInfo.h"
+#include <cassert>
 
 class Nop : public NoOperandsInstruction {
 

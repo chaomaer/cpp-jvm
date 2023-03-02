@@ -4,6 +4,7 @@
 
 #include "frame.h"
 #include "iostream"
+#include <cassert>
 
 void OperationStack::push_int(int val) {
     set_int(index++, val);

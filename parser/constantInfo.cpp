@@ -3,6 +3,7 @@
 //
 
 #include "constantInfo.h"
+#include<cassert>
 
 std::string ConstantPool::get_utf8(uint16 index) {
     auto *info = (ConstantUTF8Info *) this->at(index);

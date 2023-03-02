@@ -29,8 +29,8 @@ void Interpreter::loop(FrameManager* manager) {
             //record cur_pc in thread.pc
             reader->reset(frame->method->code, frame->pc);
             uint8 op_code = reader->read_uint8();
-            //printf("op_code is %x with id: %p \n", op_code, std::this_thread::get_id());
-            //std::cout << "class_name: " << class_name << " name: "<< method_name << std::endl;
+            printf("op_code is %x with id: %p \n", op_code, std::this_thread::get_id());
+            std::cout << "class_name: " << class_name << " name: "<< method_name << std::endl;
             auto inst = InstructionFactory::new_instruction(op_code);
             if (inst == nullptr) {
                 std::cout << "class_name: " << class_name << " name: "<< method_name << std::endl;

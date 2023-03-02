@@ -6,6 +6,8 @@
 #include "accessFlags.h"
 #include "core/interpreter.h"
 #include "common/heapVector.h"
+#include <cassert>
+#include <cstring>
 
 HeapVector<Field *> *Class::new_fields(ClassFile *class_file) {
     auto vect = new HeapVector<Field*>;
