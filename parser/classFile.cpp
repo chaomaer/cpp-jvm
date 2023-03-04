@@ -40,6 +40,7 @@ ClassFile::~ClassFile() {
         delete att;
     }
     delete attributes;
+    delete interfaces;
 }
 
 MemberInfo::~MemberInfo() {

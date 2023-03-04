@@ -11,9 +11,11 @@ class Class;
 class ObjectLocalVars;
 class HeapObject {
 public:
+    void* operator new(std::size_t n);
     Class* _class{nullptr};
     ObjectLocalVars* fields{nullptr};
     Class* extra;
+
 };
 
 class ArrayObject0 : public HeapObject {

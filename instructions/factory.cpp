@@ -192,3 +192,7 @@ Instruction *InstructionFactory::new_instruction(int op_code) {
             return nullptr;
     }
 }
+
+bool InstructionFactory::is_return(int op_code) {
+    return op_code == 0xac || op_code == 0xad || op_code == 0xb0 || op_code == 0xb1;
+}

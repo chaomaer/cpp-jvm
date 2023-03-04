@@ -29,8 +29,8 @@ void Interpreter::loop(FrameManager* manager) {
             //record cur_pc in thread.pc
             reader->reset(frame->method->code, frame->pc);
             uint8 op_code = reader->read_uint8();
-            printf("op_code is %x with id: %p \n", op_code, std::this_thread::get_id());
-            std::cout << "class_name: " << class_name << " name: "<< method_name << std::endl;
+            //printf("op_code is %x with id: %p \n", op_code, std::this_thread::get_id());
+            //std::cout << "class_name: " << class_name << " name: "<< method_name << std::endl;
             auto inst = InstructionFactory::new_instruction(op_code);
             if (inst == nullptr) {
                 std::cout << "class_name: " << class_name << " name: "<< method_name << std::endl;
@@ -41,28 +41,30 @@ void Interpreter::loop(FrameManager* manager) {
             if (method_name == "start0" && desc == "()V" && op_code == 0xfe) {
                 // start a new std::thread
                 auto x = start_new_loop(frame);
-                invoked_threads->push_back(x);
+                vm->invoked_threads->push_back(x);
             }else{
                 inst->execute(frame);
             }
-            frame->manager->pc = frame->pc;
-        }
-        // print local_var and stack
-//        frame->local_vars->print();
-//        frame->operation_stack->print();
-    }
-    for (auto& t1 :  *invoked_threads) {
-        if (t1->get_id() != std::this_thread::get_id()) {
-            t1->join();
+            delete inst;
+            if(!InstructionFactory::is_return(op_code)) {
+                frame->manager->pc = frame->pc;
+            }
         }
     }
+    for (auto& t1 :  *vm->invoked_threads) {
+            t1->t->join();
+    }
+    for (auto& _vm: *vm->invoked_threads) {
+        delete _vm;
+    }
+    delete reader;
 }
 
-Interpreter::Interpreter() {
-    invoked_threads = new std::vector<std::thread*>();
+Interpreter::Interpreter(VMThread *vm):vm(vm) {
+
 }
 
-std::thread *Interpreter::start_new_loop(Frame *frame) {
+VMThread *Interpreter::start_new_loop(Frame *frame) {
     auto _this = frame->local_vars->get_ref(0);
     auto class_loader = frame->method->_class->class_loader;
     auto thread_class = class_loader->load_class("java/lang/Thread");
@@ -72,6 +74,5 @@ std::thread *Interpreter::start_new_loop(Frame *frame) {
     auto new_frame = manager->new_frame(target_m);
     new_frame->local_vars->set_ref(0, _this);
     manager->push_frame(new_frame);
-    auto new_t = VMThread(manager);
-    return new_t.start();
+    return new VMThread(manager);
 }

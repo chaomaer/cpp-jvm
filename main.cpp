@@ -27,11 +27,12 @@ void start_jvm(int argc, char** argv) {
         exit(-1);
     }
     auto vm = new VMThread(main_method);
-    auto t = vm->start();
-    t->join();
+    vm->t->join();
+    Universe::clean_up();
     delete vm;
     delete class_loader;
     delete ps;
+    delete[] MemBuffer::buffer;
 }
 
 int main(int argc, char** argv) {

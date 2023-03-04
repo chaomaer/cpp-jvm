@@ -28,6 +28,7 @@ class Instruction {
 public:
     virtual void fetch_operands(BytecodeReader* reader) {}
     virtual void execute(Frame* frame) {}
+    virtual ~Instruction() = default;
 };
 
 class NoOperandsInstruction : public Instruction {

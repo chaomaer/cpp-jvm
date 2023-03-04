@@ -11,6 +11,7 @@ public:
     static NativeRegistry* registry;
 public:
     static void init();
+    static void clean_up();
 };
 
 #endif //CPP_JVM2_UNIVERSE_H

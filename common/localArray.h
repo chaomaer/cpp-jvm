@@ -12,8 +12,8 @@
 class HeapObject;
 class Slot {
 public:
+    void *operator new(std::size_t n);
     Slot(int numb);
-
     Slot(HeapObject *ref);
 
 public:
@@ -57,11 +57,13 @@ template<typename T>
 class StackVector : public std::vector<T>{
 public:
     StackVector(int i): std::vector<T>(i) {};
+    //void* operator new(std::size_t n);
 };
 
 class ObjectLocalVars : public LocalVars<HeapVector>{
 public:
     ObjectLocalVars(int size): LocalVars<HeapVector>(size){}
+    void* operator new(std::size_t n);
 };
 
 typedef LocalVars<StackVector> OperationLocalVars;

@@ -14,6 +14,7 @@ public:
     FILE* _fp;
     char buffer[BUFFER_SIZE];
 public:
+    ~BufferedInputStream();
     BufferedInputStream(const char* fileName);
     BufferedInputStream(std::string fileName);
     uint8 read_uint8();

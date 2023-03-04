@@ -4,6 +4,8 @@
 
 #include "frame.h"
 #include "iostream"
+#include "heapObject.h"
+
 #include <cassert>
 
 void OperationStack::push_int(int val) {
@@ -95,9 +97,15 @@ Frame::Frame(int maxStack, int maxLocals, FrameManager *manager, Method *method)
 
 Frame::~Frame() {
     if (local_vars != nullptr) {
+        if (local_vars->_inner) {
+            delete local_vars->_inner;
+        }
         delete local_vars;
     }
     if (operation_stack != nullptr) {
+        if (operation_stack->_inner) {
+            delete operation_stack->_inner;
+        }
         delete operation_stack;
     }
 }
@@ -130,3 +138,7 @@ template class ArrayObject<long>;
 template class ArrayObject<float>;
 template class ArrayObject<HeapObject*>;
 template class ArrayObject<double>;
+
+void *HeapObject::operator new(std::size_t n) {
+    return MemBuffer::allocate(n);
+}

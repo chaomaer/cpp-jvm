@@ -9,6 +9,7 @@
 class InstructionFactory {
 public:
     static Instruction* new_instruction(int op_code);
+    static bool is_return(int op_code);
 };
 
 #endif //CPP_JVM2_FACTORY_H

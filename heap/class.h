@@ -18,12 +18,14 @@ class Class;
 class RTConst;
 class RTConstantPool : public HeapVector<RTConst*>{
 public:
+    void* operator new(std::size_t n);
     RTConstantPool(int size);
     Class* _class;
 };
 
 class ClassMember {
 public:
+    void* operator new(std::size_t n);
     uint16 access_flag;
     HeapString name;
     HeapString descriptor;
@@ -92,20 +94,21 @@ public:
     void init_one_static(Field* f);
     Class(ClassFile* class_file);
     Class();
+    void* operator new(std::size_t n);
     uint16 access_flags;
     HeapString name;
     HeapString superClass_name;
-    HeapVector<HeapString>* interface_names;
-    RTConstantPool* rt_constant_pool;
-    HeapVector<Field*>* fields;
-    HeapVector<Method*>* methods;
-    ClassLoader* class_loader;
-    Class* super_class;
-    HeapVector<Class*>* interface_classes;
+    HeapVector<HeapString>* interface_names{nullptr};
+    RTConstantPool* rt_constant_pool{nullptr};
+    HeapVector<Field*>* fields{nullptr};
+    HeapVector<Method*>* methods{nullptr};
+    ClassLoader* class_loader{nullptr};
+    Class* super_class{nullptr};
+    HeapVector<Class*>* interface_classes{nullptr};
     uint32 instance_slot_count;
     uint32 static_slot_count;
-    ObjectLocalVars* static_vars;
-    HeapObject* jClass; // the instance of the java/lang/Class
+    ObjectLocalVars* static_vars{nullptr};
+    HeapObject* jClass{nullptr}; // the instance of the java/lang/Class
 };
 
 #endif //CPP_JVM2_CLASS_H

@@ -9,9 +9,9 @@ ClassRef::ClassRef(ConstantClassInfo *info, RTConstantPool *cp) : ClassRef(info,
 
 ClassRef::ClassRef(ConstantClassInfo *info, RTConstantPool *cp, int type) : SymRef(type) {
     if (type == CONSTANT_Class) {
-        class_name = info->cp->get_utf8(info->class_index);
+        class_name = str_to_heapStr(info->cp->get_utf8(info->class_index));
     }else {
-        class_name = info->cp->get_class_name(info->class_index);
+        class_name = str_to_heapStr(info->cp->get_class_name(info->class_index));
     }
     rt_cp = cp;
 }
@@ -21,7 +21,7 @@ Class *ClassRef::resolve_class_ref() {
         return _class;
     }
     auto cur_class = rt_cp->_class;
-    _class = cur_class->class_loader->load_class(class_name);
+    _class = cur_class->class_loader->load_class(heapStr_to_str(class_name));
     // todo 权限控制
     return _class;
 }
@@ -30,7 +30,7 @@ void MemberRef::copy_member_info(ConstantMemberRefInfo *info) {
     auto p = info->cp->get_name_and_type(info->name_and_type_index);
     name = str_to_heapStr(p.first);
     descriptor = str_to_heapStr(p.second);
-    class_name = info->cp->get_class_name(info->class_index);
+    class_name = str_to_heapStr(info->cp->get_class_name(info->class_index));
 }
 
 MemberRef::MemberRef(ConstantMemberRefInfo *info, RTConstantPool *cp, int type) : ClassRef((ConstantClassInfo *) info,
@@ -79,6 +79,10 @@ InterfaceMethodRef::InterfaceMethodRef(ConstantInterfaceMethodRefInfo *info, RTC
 
 RTConst::RTConst(uint16 type) : type(type) {
 
+}
+
+void *RTConst::operator new(std::size_t n) {
+    return MemBuffer::allocate(n);
 }
 
 SymRef::SymRef(int type) : RTConst(type) {

@@ -29,16 +29,31 @@ bool FrameManager::empty_frame() {
 }
 
 VMThread::VMThread(Method *method) {
+    invoked_threads = new std::vector<VMThread*>;
     manager = new FrameManager;
     auto frame = manager->new_frame(method);
     manager->push_frame(frame);
-    interpreter = new Interpreter;
+    interpreter = new Interpreter(this);
+    start();
 }
 
 VMThread::VMThread(FrameManager *manager): manager(manager) {
-    interpreter = new Interpreter;
+    invoked_threads = new std::vector<VMThread*>;
+    interpreter = new Interpreter(this);
+    start();
 }
 
-std::thread * VMThread::start() {
-    return new std::thread(&Interpreter::loop, interpreter, manager);
+void VMThread::start() {
+    t = new std::thread(&Interpreter::loop, interpreter, manager);
+}
+
+VMThread::~VMThread() {
+    delete t;
+    delete invoked_threads;
+    if (manager != nullptr) {
+        delete manager;
+    }
+    if (interpreter != nullptr) {
+        delete interpreter;
+    }
 }

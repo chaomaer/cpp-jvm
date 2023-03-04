@@ -32,7 +32,9 @@ HeapVector<Method *> *Class::new_methods(ClassFile *class_file) {
         new_m->cal_arg_slot_number();
         new_m->_class = this;
         if (new_m->is_native()) {
-            new_m->inject_code_attribute(new_m->parse_descriptor()->retType);
+            auto m_type = new_m->parse_descriptor();
+            new_m->inject_code_attribute(m_type->retType);
+            delete m_type;
         }
         vect->push_back(new_m);
     }
@@ -115,9 +117,11 @@ Class::Class(ClassFile *class_file) {
     this->name = str_to_heapStr(class_file->get_class_name());
     std::cout << superClass_name << "<-" << name << std::endl;
     this->interface_names = new HeapVector<HeapString>;
-    for (auto& s: *class_file->get_interface_names()) {
+    auto inter_names = class_file->get_interface_names();
+    for (auto& s: *inter_names) {
         this->interface_names->push_back(str_to_heapStr(s));
     }
+    delete inter_names;
     this->rt_constant_pool = this->new_rt_constant_pool(class_file);
     this->fields = this->new_fields(class_file);
     this->methods = this->new_methods(class_file);
@@ -300,15 +304,15 @@ HeapObject *Class::new_array(int size) {
 }
 
 void Class::execute_class_init() {
-    auto m = lookup_method("<clinit>", "()V");
-    if (m == nullptr) {
-        return;
-    }
-    auto manager = new FrameManager();
-    auto frame = manager->new_frame(m);
-    manager->push_frame(frame);
-    auto vm = new Interpreter();
-    vm->loop(manager);
+//    auto m = lookup_method("<clinit>", "()V");
+//    if (m == nullptr) {
+//        return;
+//    }
+//    auto manager = new FrameManager();
+//    auto frame = manager->new_frame(m);
+//    manager->push_frame(frame);
+//    auto vm = new Interpreter();
+//    vm->loop(manager);
 }
 
 Class *Class::array_class() {
@@ -328,6 +332,10 @@ HeapString Class::get_array_name() {
     }
     //object
     return str_to_heapStr("[L" + str_name + ";");
+}
+
+void *Class::operator new(std::size_t n) {
+    return MemBuffer::allocate(n);
 }
 
 void ClassMember::copy_member_info(MemberInfo *member_info) {
@@ -403,6 +411,7 @@ int Method::cal_arg_slot_number() {
         slot_number++;
     }
     arg_slot_number = slot_number;
+    delete method_type;
     return slot_number;
 }
 
@@ -410,19 +419,21 @@ void Method::inject_code_attribute(HeapString a_type) {
     max_locals = arg_slot_number;
     max_stack = 4;
     char type = a_type[0];
+    code = static_cast<uint8 *>(MemBuffer::allocate(2));
+    code[0] = 0xfe;
     if (type == 'V') {
-        code = new uint8[2] {0xfe, 0xb1}; // return
+        code[1] = 0xb1; // return
     }else if (type == 'D') {
-        code = new uint8[2] {0xfe, 0xaf}; // dreturn
+        code[1] = 0xaf; // dreturn
     }else if (type == 'L' || type == '[') {
-        code = new uint8[2] {0xfe, 0xb0}; // areturn
+        code[1] = 0xb0; // areturn
     }else if (type == 'F') {
-        code = new uint8[2] {0xfe, 0xae}; // freturn
+        code[1] = 0xae; // freturn
     }else if (type == 'J') {
-        code = new uint8[2] {0xfe, 0xad}; // lreturn
+        code[1] = 0xad; // lreturn
     }else {
-        std::cout << "native return type: " << type << std::endl;
-        code = new uint8[2] {0xfe, 0xac}; //ireturn
+        //std::cout << "native return type: " << type << std::endl;
+        code[1] = 0xac; //ireturn
     }
 }
 
@@ -451,7 +462,15 @@ bool ClassMember::is_native() {
     return access_flag & ACC_NATIVE;
 }
 
+void *ClassMember::operator new(std::size_t n) {
+    return MemBuffer::allocate(n);
+}
+
 RTConstantPool::RTConstantPool(int size) : HeapVector<RTConst*>(size){
+}
+
+void *RTConstantPool::operator new(std::size_t n) {
+    return MemBuffer::allocate(n);
 }
 
 HeapString to_string(HeapObject* object) {

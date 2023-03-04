@@ -9,6 +9,7 @@
 
 class RTConst {
 public:
+    void* operator new(std::size_t n);
     RTConst(uint16 type);
     uint16 type;
 };
@@ -19,7 +20,7 @@ class Method;
 class SymRef : public RTConst {
 public:
     RTConstantPool* rt_cp;
-    std::string class_name;
+    HeapString class_name;
     Class* _class{nullptr};
     SymRef(int type);
 };

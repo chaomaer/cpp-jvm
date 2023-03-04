@@ -74,3 +74,11 @@ BufferedInputStream::BufferedInputStream(const char *fileName) {
 
 BufferedInputStream::BufferedInputStream(std::string fileName) : BufferedInputStream(fileName.c_str()) {
 }
+
+BufferedInputStream::~BufferedInputStream(){
+    if (_fp) {
+        fclose(_fp);
+    }
+};
+
+

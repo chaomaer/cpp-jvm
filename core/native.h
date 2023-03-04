@@ -15,6 +15,7 @@ private:
     std::unordered_map<std::string, nativeFunc>* native_methods;
     NativeRegistry();
 public:
+    ~NativeRegistry();
     static int size();
     static NativeRegistry* get_registry();
     void _register(std::string class_name, std::string name, std::string des, nativeFunc func);

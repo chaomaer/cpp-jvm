@@ -9,9 +9,9 @@
 
 class ByteCodeParser {
 public:
-    BufferedInputStream br;
+    BufferedInputStream* br;
 public:
-    explicit ByteCodeParser(BufferedInputStream bf);
+    explicit ByteCodeParser(BufferedInputStream* bf);
     ClassFile* parse();
     ConstantPool* load_constant_pool();
     std::vector<AttributeInfo*>* load_attributes(ConstantPool* cp);

@@ -9,6 +9,10 @@ Slot::Slot(int numb) : numb(numb) {}
 
 Slot::Slot(HeapObject *ref) : ref(ref) {}
 
+void *Slot::operator new(std::size_t n) {
+    return MemBuffer::allocate(n);
+}
+
 union float_int {
     float f_val;
     int i_val;
@@ -108,3 +112,7 @@ void LocalVars<V>::print() {
 
 template class LocalVars<StackVector>;
 template class LocalVars<HeapVector>;
+
+void *ObjectLocalVars::operator new(std::size_t n) {
+    return MemBuffer::allocate(n);
+}

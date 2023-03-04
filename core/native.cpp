@@ -35,3 +35,7 @@ int NativeRegistry::size() {
     assert(registry != nullptr);
     return registry->native_methods->size();
 }
+
+NativeRegistry::~NativeRegistry() {
+    delete native_methods;
+}

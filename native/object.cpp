@@ -74,6 +74,5 @@ void NativeObject::start0(Frame* frame) {
     auto new_frame = manager->new_frame(target_m);
     new_frame->local_vars->set_ref(0, _this);
     manager->push_frame(new_frame);
-    auto new_t = VMThread(manager);
-    new_t.start();
+//    return new VMThread(manager);
 }

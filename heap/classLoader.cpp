@@ -86,8 +86,11 @@ ClassFile *ClassLoader::read_class(std::string class_name) {
         std::cout << "class name: " << class_name << " not find " << std::endl;
         exit(2);
     }
-    auto class_parser = new ByteCodeParser(BufferedInputStream(std::move(full_class_name)));
+    auto bf = new BufferedInputStream(std::move(full_class_name));
+    auto class_parser = new ByteCodeParser(bf);
     auto class_file = class_parser->parse();
+    delete class_parser;
+    delete bf;
     return class_file;
 }
 
