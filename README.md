@@ -1,5 +1,22 @@
 # An Educational Java Virtual Machine
 
+## 使用方法
+仅支持Mac和Linux
+```
+# Clone a repo
+$ git clone https://github.com/chaomaer/cpp-jvm
+$ cd cpp-jvm
+
+# Build cpp-jvm
+$ mkdir build
+$ cmake .. （如果是Mac系统，需要加-DAPPLE=1）
+$ make
+
+# 运行class文件
+$ cd build/
+$ ./cpp-jvm ${name-of-class}
+```
+
 ## 功能实现
 - :white_check_mark: 加载class文件
 - :white_check_mark: 字符串和数组
