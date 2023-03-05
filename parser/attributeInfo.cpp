@@ -19,7 +19,7 @@ LocalVariableTableEntry::LocalVariableTableEntry(uint16 startPc, uint16 length, 
                                                                                          index(index) {}
 
 CodeAttribute::~CodeAttribute() {
-    delete byte_code;
+    delete[] byte_code;
     for (auto& et : *exception_table) {
         delete et;
     }
