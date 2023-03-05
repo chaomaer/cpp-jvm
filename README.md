@@ -1,7 +1,11 @@
 # An Educational Java Virtual Machine
 
 ## 使用方法
-仅支持Mac和Linux
+准备工作
+```
+# 解压rt.jar到指定文件夹
+cd ${dir-rt-extract} && jar -xvf rt.jar
+```
 ```
 # Clone a repo
 $ git clone https://github.com/chaomaer/cpp-jvm
@@ -14,7 +18,7 @@ $ make
 
 # 运行class文件
 $ cd build/
-$ ./cpp-jvm ${name-of-class}
+$ ./cpp-jvm {dir-rt-extract} {path-of-class} ${name-of-class}
 ```
 
 ## 功能实现
