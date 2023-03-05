@@ -6,6 +6,7 @@
 #include "heap/rtConsts.h"
 #include <iostream>
 #include "core/frame.h"
+#include "common/debug.h"
 
 void A_CONST_NULL::execute(Frame *frame) {
     frame->operation_stack->push_ref(nullptr);
@@ -103,6 +104,6 @@ void LDC2_W::execute(Frame *frame) {
     }else if (val -> type == CONSTANT_Double) {
         stack->push_double(((RTDouble_Const *) val)->val);
     }else {
-        std::cout << "load unsupported const" << std::endl;
+        DEBUG_MSG("load unsupported const");
     }
 }

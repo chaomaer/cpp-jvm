@@ -3,7 +3,7 @@
 //
 
 #include "bufferedInputStream.h"
-#include "iostream"
+#include "common/debug.h"
 #include<cstring>
 
 uint8 BufferedInputStream::read_uint8() {
@@ -61,12 +61,12 @@ double BufferedInputStream::read_double() {
 }
 
 BufferedInputStream::BufferedInputStream(const char *fileName) {
-    std::cout << "load class " << fileName << std::endl;
+    DEBUG_MSG("load class " << fileName);
     _fp = fopen(fileName, "rb");
     if (_fp == nullptr) {
         // std::string new_str = gen_class_name(fileName);
         //_fp = fopen(new_str.c_str(), "rb");
-        std::cout << fileName << " not find" << std::endl;
+        DEBUG_MSG(fileName << " not find");
     }
     fread(buffer, BUFFER_SIZE, 1, _fp);
     _index = 0;

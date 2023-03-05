@@ -4,6 +4,7 @@
 
 #include "localArray.h"
 #include "iostream"
+#include "debug.h"
 
 Slot::Slot(int numb) : numb(numb) {}
 
@@ -104,10 +105,10 @@ template<template<typename> class V>
 void LocalVars<V>::print() {
     for (int i = 0; i < _inner->size(); i++) {
         if (_inner->at(i) != nullptr) {
-            std::cout << i << " -> " << _inner->at(i)->numb << std::endl;
+            DEBUG_MSG(i << " -> " << _inner->at(i)->numb);
         }
     }
-    std::cout << "-------" << std::endl;
+    DEBUG_MSG("-------");
 }
 
 template class LocalVars<StackVector>;

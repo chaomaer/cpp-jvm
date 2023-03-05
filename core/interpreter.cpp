@@ -5,7 +5,7 @@
 #include "interpreter.h"
 #include "frame.h"
 #include "instructions/factory.h"
-#include "iostream"
+#include "common/debug.h"
 
 void Interpreter::run(Method* method) {
     auto manager = new FrameManager();
@@ -33,7 +33,7 @@ void Interpreter::loop(FrameManager* manager) {
             //std::cout << "class_name: " << class_name << " name: "<< method_name << std::endl;
             auto inst = InstructionFactory::new_instruction(op_code);
             if (inst == nullptr) {
-                std::cout << "class_name: " << class_name << " name: "<< method_name << std::endl;
+                DEBUG_MSG("class_name: " << class_name << " name: "<< method_name);
                 exit(-1);
             }
             inst->fetch_operands(reader);

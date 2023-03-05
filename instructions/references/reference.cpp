@@ -5,6 +5,7 @@
 #include "reference.h"
 #include "core/universe.h"
 #include <iostream>
+#include "common/debug.h"
 #include <cassert>
 
 void static_put(OperationStack *stack, ObjectLocalVars *vars, Field *f) {
@@ -21,7 +22,7 @@ void static_put(OperationStack *stack, ObjectLocalVars *vars, Field *f) {
     } else if (des[0] == 'L' || des[0] == '[') {
         vars->set_ref(id, stack->pop_ref());
     } else {
-        std::cout << "[STATIC_PUT:] unsupported descriptor " << des << std::endl;
+        DEBUG_MSG("[STATIC_PUT:] unsupported descriptor " << des);
     }
 }
 
@@ -40,7 +41,7 @@ void static_get(OperationStack *stack, ObjectLocalVars *vars, Field *f) {
         stack->push_ref(vars->get_ref(id));
     } else {
         stack->push_ref(vars->get_ref(id));
-        std::cout << "[STATIC_PUT:] unsupported descriptor " << des << std::endl;
+        DEBUG_MSG("[STATIC_PUT:] unsupported descriptor " << des);
     }
 }
 
@@ -72,7 +73,7 @@ void field_put(OperationStack *stack, Field *f) {
         auto ref = stack->pop_ref();
         ref->fields->set_ref(id, val);
     } else {
-        std::cout << "[PUT_FIELD:] unsupported descriptor" << std::endl;
+        DEBUG_MSG("[PUT_FIELD:] unsupported descriptor");
     }
 }
 
@@ -91,7 +92,7 @@ void field_get(OperationStack *stack, Field *f) {
     } else if (des[0] == 'L' || des[0] == '[') {
         stack->push_ref(vars->get_ref(id));
     } else {
-        std::cout << "[GET_FIELD:] unsupported descriptor " << des << std::endl;
+        DEBUG_MSG("[GET_FIELD:] unsupported descriptor " << des);
     }
 }
 
@@ -156,7 +157,7 @@ void CHECK_CAST::execute(Frame *frame) {
     if (ref->_class->is_sub_of(ref_class)) {
 
     } else {
-        std::cout << "can't cast " << std::endl;
+        DEBUG_MSG("can't cast ");
     }
 }
 
@@ -219,9 +220,9 @@ void INVOKE_INTERFACE::execute(Frame *frame) {
     auto method_ref = (InterfaceMethodRef *) cp->at(index);
     auto stack = frame->operation_stack;
     if (method_ref->name == "println") {
-        std::cout << "************" << std::endl;
+        //std::cout << "************" << std::endl;
         _println(stack, heapStr_to_str(method_ref->descriptor));
-        std::cout << "************" << std::endl;
+        //std::cout << "************" << std::endl;
         return;
     }
     auto m = method_ref->resolve_method_ref();
@@ -251,7 +252,7 @@ void INVOKE_NATIVE::execute(Frame *frame) {
     auto native_m = Universe::registry->find_native_method(
     heapStr_to_str(method->_class->name), heapStr_to_str(method->name), heapStr_to_str(method->descriptor));
     native_m(frame);
-    std::cout << method->_class->name << " " << method->name << " " << method->descriptor << std::endl;
+    DEBUG_MSG(method->_class->name << " " << method->name << " " << method->descriptor);
 }
 
 void NEW_ARRAY::execute(Frame *frame) {
@@ -261,7 +262,7 @@ void NEW_ARRAY::execute(Frame *frame) {
     auto class_loader = frame->method->_class->class_loader;
     auto arr_class = get_primitive_array_class(class_loader, a_type);
     auto object = arr_class->new_array(cnt);
-    std::cout << ((ArrayObject0*)(object))->type << std::endl;
+    DEBUG_MSG(((ArrayObject0*)(object))->type);
     stack->push_ref(object);
 }
 
@@ -295,7 +296,7 @@ Class* get_primitive_array_class(ClassLoader *pLoader, unsigned int type) {
         case AT_DOUBLE:
             return pLoader->load_class("[D");
         default:
-            std::cout << "error array type" << std::endl;
+            DEBUG_MSG("error array type");
             return nullptr;
     }
 }

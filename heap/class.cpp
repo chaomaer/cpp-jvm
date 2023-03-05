@@ -1,9 +1,10 @@
 //
 // Created by chaomaer on 2023/2/7.
 //
-#include <iostream>
+#include "common/debug.h"
 #include "class.h"
 #include "accessFlags.h"
+#include "common/debug.h"
 #include "core/interpreter.h"
 #include "common/heapVector.h"
 #include <cassert>
@@ -103,8 +104,8 @@ RTConstantPool *Class::new_rt_constant_pool(ClassFile *class_file) {
         }else if (type == CONSTANT_Utf8 || type == CONSTANT_NameAndType) {
 
         }else {
-            std::cout << type << std::endl;
-            std::cout << "[errr:] convert constant_info to runtime-constant" << std::endl;
+            DEBUG_MSG(type);
+            DEBUG_MSG("[errr:] convert constant_info to runtime-constant");
         }
     }
     return rt_cp;
@@ -115,7 +116,7 @@ Class::Class(ClassFile *class_file) {
     this->access_flags = class_file->access_flags;
     this->superClass_name = str_to_heapStr(class_file->get_superClass_name());
     this->name = str_to_heapStr(class_file->get_class_name());
-    std::cout << superClass_name << "<-" << name << std::endl;
+    DEBUG_MSG(superClass_name << "<-" << name);
     this->interface_names = new HeapVector<HeapString>;
     auto inter_names = class_file->get_interface_names();
     for (auto& s: *inter_names) {
@@ -192,7 +193,7 @@ void Class::init_one_static(Field* f) {
         }
     } else {
         static_vars->set_ref(slot_id, nullptr);
-        std::cout << "[INIT STATIC]: not supported " <<des << std::endl;
+        DEBUG_MSG("[INIT STATIC]: not supported " <<des);
     }
 }
 
@@ -432,7 +433,7 @@ void Method::inject_code_attribute(HeapString a_type) {
     }else if (type == 'J') {
         code[1] = 0xad; // lreturn
     }else {
-        //std::cout << "native return type: " << type << std::endl;
+        //DEBUG_MSG("native return type: " << type);
         code[1] = 0xac; //ireturn
     }
 }

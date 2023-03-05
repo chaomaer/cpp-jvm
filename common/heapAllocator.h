@@ -25,7 +25,6 @@ public:
     typedef T* pointer;
     HeapAllocator() = default;
     pointer allocate(std::size_t n) {
-        //std::cout << "allocate " << n << std::endl;
         auto p = MemBuffer::allocate(sizeof (value_type)*n);
         return static_cast<T*>(p);
     }

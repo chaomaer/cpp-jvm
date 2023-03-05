@@ -171,14 +171,12 @@ ConstantPool *ByteCodeParser::load_constant_pool() {
                 auto *x = new ConstantFloatInfo();
                 constantPool->at(i) = x;
                 x->val = br->read_float();
-                std::cout << x->val << " float" << std::endl;
                 break;
             }
             case CONSTANT_Double: {
                 auto *x = new ConstantDoubleInfo();
                 constantPool->at(i) = x;
                 x->val = br->read_double();
-                std::cout << x->val << " double" << std::endl;
                 i++;
                 break;
             }

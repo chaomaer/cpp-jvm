@@ -4,7 +4,7 @@
 
 #include "classLoader.h"
 #include "parser/byteCodeParser.h"
-#include "iostream"
+#include "common/debug.h"
 #include "accessFlags.h"
 #include "filesystem"
 
@@ -23,7 +23,7 @@ Class *ClassLoader::load_class(std::string class_name) {
         val->jClass = c_class->new_object();
         val->jClass->extra = val;
     }
-    std::cout << "load class " << class_name << " over " << std::endl;
+    DEBUG_MSG("load class " << class_name << " over ");
     // execute <clinit>
     //val->execute_class_init();
     return val;
@@ -83,7 +83,7 @@ ClassFile *ClassLoader::read_class(std::string class_name) {
         }
     }
     if (!find) {
-        std::cout << "class name: " << class_name << " not find " << std::endl;
+        DEBUG_MSG("class name: " << class_name << " not find ");
         exit(2);
     }
     auto bf = new BufferedInputStream(std::move(full_class_name));
@@ -148,7 +148,7 @@ ClassLoader::ClassLoader(std::vector<std::string> *paths) :
 void ClassLoader::debug_class_map() {
     auto it = class_map->begin();
     for (; it != class_map->end(); it++) {
-        std::cout << it->first << " -> " << it->second << std::endl;
+        DEBUG_MSG(it->first << " -> " << it->second);
     }
 }
 

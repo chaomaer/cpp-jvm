@@ -4,13 +4,14 @@
 
 #include "arithmetic.h"
 #include "iostream"
+#include "common/debug.h"
 
 void I_REM::execute(Frame *frame) {
     auto* stack = frame->operation_stack;
     auto v2 = stack->pop_int();
     auto v1 = stack->pop_int();
     if (v2 == 0) {
-        std::cout << "a/b and b = 0" << std::endl;
+        DEBUG_MSG("a/b and b = 0");
         exit(-1);
     }
     stack->push_int(v1 % v2);
