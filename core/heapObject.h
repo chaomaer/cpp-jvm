@@ -6,16 +6,17 @@
 #define CPP_JVM2_HEAPOBJECT_H
 #include "common/localArray.h"
 #include "vector"
+#include "core/monitor.h"
 
 class Class;
 class ObjectLocalVars;
 class HeapObject {
 public:
+    MonitorLock lock;
     void* operator new(std::size_t n);
     Class* _class{nullptr};
     ObjectLocalVars* fields{nullptr};
     Class* extra;
-
 };
 
 class ArrayObject0 : public HeapObject {
