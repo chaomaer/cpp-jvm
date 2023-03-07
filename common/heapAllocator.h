@@ -8,10 +8,12 @@
 
 class MemBuffer {
 public:
+    static std::mutex lock;
     static int index;
     static char* buffer;
 public:
     static void* allocate(int size) {
+        std::lock_guard<std::mutex> guard(lock);
         auto p = buffer + index;
         index += size;
         return p;
